@@ -21,22 +21,28 @@ window.addEventListener('load', () => {
     tl.to('.cta-wrap',     { opacity: 1, y: 0, duration: 0.4 }, '-=0.15');
     tl.to('.platforms',    { opacity: 1, duration: 0.35 }, '-=0.1');
 
+    // 제목 둥둥
     gsap.to('.hero-title',   { y: -8, duration: 2.5, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 2 });
     gsap.to('.hero-tagline', { y: -5, duration: 3,   repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 2.3 });
 
+    // 캐릭터 idle float — y축만, 각각 타이밍 다르게
+    gsap.to('.ekko-img', { y: -14, duration: 2.8, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0 });
+    gsap.to('.vi-img',   { y: -10, duration: 3.2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.5 });
+    gsap.to('.jinx-img', { y: -12, duration: 3.0, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.3 });
+    gsap.to('.ahri-img', { y:  -9, duration: 2.6, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.8 });
+
+    // 마우스 시차 — x축만 (y는 float에 양보)
     const hero = document.querySelector('.hero');
     hero.addEventListener('mousemove', (e) => {
       const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
       const dx = (e.clientX - cx) / cx;
-      const dy = (e.clientY - cy) / cy;
 
-      gsap.to('.ekko-img',     { x: dx * -18, y: dy * -10, duration: 0.8, ease: 'power1.out' });
-      gsap.to('.vi-img',       { x: dx * -12, y: dy * -6,  duration: 0.8, ease: 'power1.out' });
-      gsap.to('.jinx-img',     { x: dx *  18, y: dy * -10, duration: 0.8, ease: 'power1.out' });
-      gsap.to('.ahri-img',     { x: dx *  12, y: dy * -6,  duration: 0.8, ease: 'power1.out' });
-      gsap.to('.hero-title',   { x: dx *   8, y: dy *   5, duration: 1,   ease: 'power1.out' });
-      gsap.to('.hero-tagline', { x: dx *   5, y: dy *   3, duration: 1,   ease: 'power1.out' });
+      gsap.to('.ekko-img',     { x: dx * -18, duration: 0.8, ease: 'power1.out' });
+      gsap.to('.vi-img',       { x: dx * -12, duration: 0.8, ease: 'power1.out' });
+      gsap.to('.jinx-img',     { x: dx *  18, duration: 0.8, ease: 'power1.out' });
+      gsap.to('.ahri-img',     { x: dx *  12, duration: 0.8, ease: 'power1.out' });
+      gsap.to('.hero-title',   { x: dx *   8, duration: 1,   ease: 'power1.out' });
+      gsap.to('.hero-tagline', { x: dx *   5, duration: 1,   ease: 'power1.out' });
     });
   } else {
     document.querySelectorAll('.hero-title, .hero-tagline, .hero-sub, .cta-wrap, .platforms')
@@ -86,6 +92,30 @@ window.addEventListener('load', () => {
 
   if (prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));
   if (nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  // Hero inline video
+  const heroInlineWrap = document.querySelector('.hero-inline-video');
+  const heroInlinePlayer = document.querySelector('.hero-inline-player');
+  const heroVideoOpenBtn = document.querySelector('.hero-video-open');
+  const heroInlineClose = document.querySelector('.hero-inline-close');
+
+  if (heroVideoOpenBtn && heroInlineWrap && heroInlinePlayer) {
+    heroVideoOpenBtn.addEventListener('click', () => {
+      heroInlineWrap.classList.add('is-open');
+      heroInlinePlayer.currentTime = 0;
+      heroInlinePlayer.play().catch(() => {});
+    });
+    heroInlineClose.addEventListener('click', () => {
+      heroInlineWrap.classList.remove('is-open');
+      heroInlinePlayer.pause();
+      heroInlinePlayer.currentTime = 0;
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && heroInlineWrap.classList.contains('is-open')) {
+        heroInlineClose.click();
+      }
+    });
+  }
 
   const videoModal = document.querySelector('.video-modal');
   const videoPlayer = document.querySelector('.video-player');
