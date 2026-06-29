@@ -97,14 +97,15 @@ window.addEventListener('load', () => {
   // Champions section
   const champData = {
     caitlyn: {
-      color: '#1a5fa8',
+      color: '#092F75',
       name: 'CAITLYN',
       subtitle: '필트오버의 보안관',
       desc: '텍스트 준비 중입니다.',
       quote: '"범죄자들, 한 명씩 잡아드리죠."',
       role: 'MARKSMAN',
       style: 'ZONING / KEEP AWAY',
-      img: '',
+      img: 'images/caitlyn character.png',
+      imgHeight: '180vh',
       stats: { difficulty: 45, speed: 55, power: 70, range: 90 },
     },
     teemo: {
@@ -115,7 +116,8 @@ window.addEventListener('load', () => {
       quote: '"죽음은 독처럼 천천히 스며들지."',
       role: 'SPECIALIST',
       style: 'TRAP / PRESSURE',
-      img: '',
+      img: 'images/teemo img.png',
+      imgHeight: '90vh',
       stats: { difficulty: 65, speed: 70, power: 55, range: 65 },
     },
     ahri: {
@@ -126,7 +128,8 @@ window.addEventListener('load', () => {
       quote: '"당신의 마음, 이미 제 손안에 있어요."',
       role: 'ASSASSIN',
       style: 'RUSH DOWN / MIX-UP',
-      img: 'images/ahri_no_bg.png',
+      img: 'images/ahri character.png',
+      imgHeight: '180vh',
       stats: { difficulty: 60, speed: 80, power: 70, range: 75 },
     },
     boltz: {
@@ -137,7 +140,8 @@ window.addEventListener('load', () => {
       quote: '"텍스트 준비 중입니다."',
       role: 'FIGHTER',
       style: 'RUSHDOWN / PRESSURE',
-      img: '',
+      img: 'images/blitzcrank character.png',
+      imgHeight: '90vh',
       stats: { difficulty: 55, speed: 85, power: 75, range: 45 },
     },
   };
@@ -158,6 +162,7 @@ window.addEventListener('load', () => {
 
     const champPanel = champSection.querySelector('.champ-panel');
     const champOrb = champSection.querySelector('.champ-orb');
+    const champMushs = document.querySelectorAll('.champ-mush');
 
     // 섹션 진입 인트로 애니메이션
     let introPlayed = false;
@@ -173,12 +178,14 @@ window.addEventListener('load', () => {
 
       const tl = gsap.timeline();
 
+      const isAhri = champSection.querySelector('.champ-tab.active')?.dataset.champ === 'ahri';
+
       // 1. 빨간 배경 쾅
       tl.to(artBg, { scaleX: 1, duration: 0.45, ease: 'expo.out' })
         // 2. 캐릭터 슬램인
         .to(imgEl, { x: 0, opacity: 1, duration: 0.35, ease: 'expo.out' }, '-=0.05')
-        // 3. 오브 팝
-        .to(champOrb, { x: 0, opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2)' }, '-=0.2')
+        // 3. 오브 팝 (ahri만)
+        .to(champOrb, { x: 0, opacity: isAhri ? 1 : 0, scale: 1, duration: 0.4, ease: 'back.out(2)' }, '-=0.2')
         // 4. 텍스트 순차 등장
         .to(champPanel.children, { x: 0, opacity: 1, duration: 0.3, stagger: 0.06, ease: 'power2.out' }, '-=0.15');
     };
@@ -199,11 +206,12 @@ window.addEventListener('load', () => {
       quoteEl.textContent = d.quote;
       roleEl.innerHTML = `<strong>ROLE</strong> ${d.role}`;
       styleEl.innerHTML = `<strong>STYLE</strong> ${d.style}`;
-      if (artBg) artBg.style.background = d.color;
+      if (artBg) artBg.style.background = `linear-gradient(-14deg, #fff 0%, #fff 28%, ${d.color} 28%, ${d.color} 72%, #fff 72%, #fff 100%)`;
 
       // 캐릭터 전환 임팩트
       gsap.to(imgEl, { x: 60, opacity: 0, duration: 0.15, ease: 'power2.in', onComplete: () => {
         imgEl.src = d.img || '';
+        imgEl.style.height = d.imgHeight || '90vh';
         gsap.fromTo(imgEl, { x: 80, opacity: 0 }, { x: 0, opacity: d.img ? 1 : 0, duration: 0.3, ease: 'expo.out' });
       }});
 
@@ -213,6 +221,15 @@ window.addEventListener('load', () => {
       } else {
         gsap.to(champOrb, { opacity: 0, scale: 0.6, duration: 0.2, ease: 'power2.in' });
       }
+
+      // mush: teemo만 표시
+      champMushs.forEach((mush, i) => {
+        if (key === 'teemo') {
+          gsap.fromTo(mush, { opacity: 0, scale: 0.4, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'back.out(2)', delay: 0.3 + i * 0.1 });
+        } else {
+          gsap.to(mush, { opacity: 0, scale: 0.4, duration: 0.2, ease: 'power2.in' });
+        }
+      });
 
       const vals = [d.stats.difficulty, d.stats.speed, d.stats.power, d.stats.range];
       fills.forEach((f, i) => { f.style.width = vals[i] + '%'; });
@@ -225,6 +242,13 @@ window.addEventListener('load', () => {
         switchChamp(tab.dataset.champ);
       });
     });
+
+    // 초기 활성 탭 기준으로 배경색 설정
+    const activeTab = champSection.querySelector('.champ-tab.active');
+    if (activeTab && artBg) {
+      const d = champData[activeTab.dataset.champ];
+      if (d) artBg.style.background = `linear-gradient(-14deg, #fff 0%, #fff 28%, ${d.color} 28%, ${d.color} 72%, #fff 72%, #fff 100%)`;
+    }
   }
 
   // Hero inline video
