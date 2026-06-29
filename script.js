@@ -27,6 +27,7 @@ window.addEventListener('load', () => {
 
     // 캐릭터 idle float — y축만, 각각 타이밍 다르게
     gsap.to('.ekko-img', { y: -14, duration: 2.8, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0 });
+    gsap.to('.champ-orb', { y: -14, duration: 2.2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.2 });
     gsap.to('.vi-img',   { y: -10, duration: 3.2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.5 });
     gsap.to('.jinx-img', { y: -12, duration: 3.0, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.3 });
     gsap.to('.ahri-img', { y:  -9, duration: 2.6, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.8 });
@@ -92,6 +93,139 @@ window.addEventListener('load', () => {
 
   if (prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));
   if (nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  // Champions section
+  const champData = {
+    caitlyn: {
+      color: '#1a5fa8',
+      name: 'CAITLYN',
+      subtitle: '필트오버의 보안관',
+      desc: '텍스트 준비 중입니다.',
+      quote: '"범죄자들, 한 명씩 잡아드리죠."',
+      role: 'MARKSMAN',
+      style: 'ZONING / KEEP AWAY',
+      img: '',
+      stats: { difficulty: 45, speed: 55, power: 70, range: 90 },
+    },
+    teemo: {
+      color: '#4caf2a',
+      name: 'TEEMO',
+      subtitle: '요들 정찰대',
+      desc: '텍스트 준비 중입니다.',
+      quote: '"죽음은 독처럼 천천히 스며들지."',
+      role: 'SPECIALIST',
+      style: 'TRAP / PRESSURE',
+      img: '',
+      stats: { difficulty: 65, speed: 70, power: 55, range: 65 },
+    },
+    ahri: {
+      color: '#e8174f',
+      name: 'AHRI',
+      subtitle: '매혹적인 구미호',
+      desc: '텍스트 준비 중입니다.',
+      quote: '"당신의 마음, 이미 제 손안에 있어요."',
+      role: 'ASSASSIN',
+      style: 'RUSH DOWN / MIX-UP',
+      img: 'images/ahri_no_bg.png',
+      stats: { difficulty: 60, speed: 80, power: 70, range: 75 },
+    },
+    boltz: {
+      color: '#f5a623',
+      name: 'BLITZCRANK',
+      subtitle: '텍스트 준비 중입니다.',
+      desc: '텍스트 준비 중입니다.',
+      quote: '"텍스트 준비 중입니다."',
+      role: 'FIGHTER',
+      style: 'RUSHDOWN / PRESSURE',
+      img: '',
+      stats: { difficulty: 55, speed: 85, power: 75, range: 45 },
+    },
+  };
+
+  const champSection = document.querySelector('.champions');
+  if (champSection) {
+    const tabs = champSection.querySelectorAll('.champ-tab');
+    const bgNames = champSection.querySelectorAll('.champ-bg-name');
+    const nameEl = champSection.querySelector('.champ-name');
+    const subtitleEl = champSection.querySelector('.champ-subtitle');
+    const descEl = champSection.querySelector('.champ-desc');
+    const quoteEl = champSection.querySelector('.champ-quote');
+    const roleEl = champSection.querySelector('.champ-role');
+    const styleEl = champSection.querySelector('.champ-style');
+    const imgEl = champSection.querySelector('.champ-img');
+    const artBg = champSection.querySelector('.champ-art-bg');
+    const fills = champSection.querySelectorAll('.champ-stat-fill');
+
+    const champPanel = champSection.querySelector('.champ-panel');
+    const champOrb = champSection.querySelector('.champ-orb');
+
+    // 섹션 진입 인트로 애니메이션
+    let introPlayed = false;
+    const playIntro = () => {
+      if (introPlayed) return;
+      introPlayed = true;
+
+      // 초기 상태 세팅
+      gsap.set(artBg, { scaleX: 0, transformOrigin: 'left center' });
+      gsap.set(imgEl, { x: 120, opacity: 0 });
+      gsap.set(champOrb, { x: 80, opacity: 0, scale: 0.6 });
+      gsap.set(champPanel.children, { x: -40, opacity: 0 });
+
+      const tl = gsap.timeline();
+
+      // 1. 빨간 배경 쾅
+      tl.to(artBg, { scaleX: 1, duration: 0.45, ease: 'expo.out' })
+        // 2. 캐릭터 슬램인
+        .to(imgEl, { x: 0, opacity: 1, duration: 0.35, ease: 'expo.out' }, '-=0.05')
+        // 3. 오브 팝
+        .to(champOrb, { x: 0, opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2)' }, '-=0.2')
+        // 4. 텍스트 순차 등장
+        .to(champPanel.children, { x: 0, opacity: 1, duration: 0.3, stagger: 0.06, ease: 'power2.out' }, '-=0.15');
+    };
+
+    // IntersectionObserver로 섹션 진입 감지
+    const champObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) playIntro(); });
+    }, { root: snapWrap, threshold: 0.4 });
+    champObserver.observe(champSection);
+
+    const switchChamp = (key) => {
+      const d = champData[key];
+      if (!d) return;
+      bgNames.forEach(el => el.textContent = d.name);
+      nameEl.textContent = d.name;
+      subtitleEl.textContent = d.subtitle;
+      descEl.textContent = d.desc;
+      quoteEl.textContent = d.quote;
+      roleEl.innerHTML = `<strong>ROLE</strong> ${d.role}`;
+      styleEl.innerHTML = `<strong>STYLE</strong> ${d.style}`;
+      if (artBg) artBg.style.background = d.color;
+
+      // 캐릭터 전환 임팩트
+      gsap.to(imgEl, { x: 60, opacity: 0, duration: 0.15, ease: 'power2.in', onComplete: () => {
+        imgEl.src = d.img || '';
+        gsap.fromTo(imgEl, { x: 80, opacity: 0 }, { x: 0, opacity: d.img ? 1 : 0, duration: 0.3, ease: 'expo.out' });
+      }});
+
+      // orb: ahri만 표시
+      if (key === 'ahri') {
+        gsap.fromTo(champOrb, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2)', delay: 0.2 });
+      } else {
+        gsap.to(champOrb, { opacity: 0, scale: 0.6, duration: 0.2, ease: 'power2.in' });
+      }
+
+      const vals = [d.stats.difficulty, d.stats.speed, d.stats.power, d.stats.range];
+      fills.forEach((f, i) => { f.style.width = vals[i] + '%'; });
+    };
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        switchChamp(tab.dataset.champ);
+      });
+    });
+  }
 
   // Hero inline video
   const heroInlineWrap = document.querySelector('.hero-inline-video');
