@@ -115,15 +115,16 @@
       color: '#4caf2a',
       engName: 'TEEMO',
       name: '티모',
-      subtitle: '요들 정찰대',
-      desc: '텍스트 준비 중입니다.',
-      quote: '죽음은 독처럼 천천히 스며들지.',
-      role: 'SPECIALIST',
-      style: 'TRAP / PRESSURE',
+      subtitle: '날쌘 정찰병',
+      desc: '다양한 속임수로 상대의 허를 찌르며,<br>원거리에서 빈틈을 노려 싸웁니다.',
+      quote: '정찰 다녀오겠습니다.',
+      role: '덫사냥꾼',
+      style: '속임수 / 기습',
       img: 'images/teemo img.png',
-      imgHeight: '87vh',
-      imgTop: '-5vh',
-      skillVideos: [],
+      imgHeight: '105vh',
+      imgTop: '-18vh',
+      voiceFile: 'video/teemo voice(1).MP3',
+      skillVideos: ['video/teemo skill 1.webm', 'video/teemo skill2.webm', 'video/teemo ult.webm'],
       stats: { difficulty: 65, speed: 70, power: 55, range: 65 },
     },
     ahri: {
@@ -131,27 +132,30 @@
       engName: 'AHRI',
       name: '아리',
       subtitle: '매혹적인 구미호',
-      desc: '텍스트 준비 중입니다.',
-      quote: '당신의 마음, 이미 제 손안에 있어요.',
-      role: 'ASSASSIN',
-      style: 'RUSH DOWN / MIX-UP',
+      desc: '높은 기동성을 갖춘 마법사 챔피언으로,<br>다양한 기술을 활용해 상대를 압박합니다.',
+      quote: '내 본성을 보여주지.',
+      role: '공격 일변도',
+      style: '빠른 접근 / 연속 공격',
       img: 'images/ahri character.png',
       imgHeight: '175vh',
-      skillVideos: [],
+      imgTop: '5vh',
+      voiceFile: 'video/ahri voice(1).MP3',
+      skillVideos: ['video/ahri skill1.webm', 'video/ahri skill2.webm', 'video/ahri ult.webm'],
       stats: { difficulty: 60, speed: 80, power: 70, range: 75 },
     },
     boltz: {
       color: '#f5a623',
       engName: 'BLITZCRANK',
       name: '블리츠크랭크',
-      subtitle: '텍스트 준비 중입니다.',
-      desc: '텍스트 준비 중입니다.',
-      quote: '텍스트 준비 중입니다.',
-      role: 'FIGHTER',
-      style: 'RUSHDOWN / PRESSURE',
+      subtitle: '거대 증기 골렘',
+      desc: '로켓 손으로 상대를 가까이 끌어당겨 강력한 잡기 기술과<br>에너지 폭발로 공격을 이어 가는 챔피언입니다.',
+      quote: '인간 시대의 끝이 도래했다.',
+      role: '잡기 특화',
+      style: '상대 끌어오기 / 근접 제압',
       img: 'images/blitzcrank character.png',
       imgHeight: '87vh',
-      skillVideos: [],
+      voiceFile: 'video/blitzcrank voice(1).MP3',
+      skillVideos: ['video/blitzcrank skill1.webm', 'video/blitzcrank skill2.webm', 'video/blitzcrank ult.webm'],
       stats: { difficulty: 55, speed: 85, power: 75, range: 45 },
     },
   };
@@ -334,6 +338,7 @@
       gsap.set(champPanel.children, { x: -40, opacity: 0 });
 
       const isAhri = activeKey === 'ahri';
+      champSection.classList.toggle('ahri-active', isAhri);
 
       const tl = gsap.timeline({
         onComplete: () => {},
@@ -390,10 +395,11 @@
       gsap.to(imgEl, { x: 60, opacity: 0, duration: 0.15, ease: 'power2.in', onComplete: () => {
         imgEl.src = d.img || '';
         imgEl.style.height = d.imgHeight || '90vh';
-        if (d.imgTop !== undefined) imgEl.style.top = d.imgTop;
+        imgEl.style.top = d.imgTop !== undefined ? d.imgTop : '-4vh';
         gsap.fromTo(imgEl, { x: 80, opacity: 0 }, { x: 0, opacity: d.img ? 1 : 0, duration: 0.3, ease: 'expo.out' });
 
         // 전환 완료 후 각 요소 등장
+        champSection.classList.toggle('ahri-active', key === 'ahri');
         if (key === 'ahri') {
           gsap.fromTo(champOrb, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2)' });
         }
