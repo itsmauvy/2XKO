@@ -304,6 +304,7 @@
     skillStack.addEventListener('click', swapCard);
 
     const artBg = champSection.querySelector('.champ-art-bg');
+    const flashEl = champSection.querySelector('.champ-flash');
     const fills = champSection.querySelectorAll('.champ-stat-fill');
 
     const champPanel = champSection.querySelector('.champ-panel');
@@ -392,11 +393,50 @@
       buildStack(d.skillVideos);
 
       // 캐릭터 전환 임팩트
-      gsap.to(imgEl, { x: 60, opacity: 0, duration: 0.15, ease: 'power2.in', onComplete: () => {
+      // 1. 플래시 버스트
+      if (flashEl) {
+        gsap.killTweensOf(flashEl);
+        gsap.set(flashEl, { background: d.color, opacity: 0 });
+        gsap.to(flashEl, { opacity: 0.35, duration: 0.08, ease: 'power4.out',
+          onComplete: () => gsap.to(flashEl, { opacity: 0, duration: 0.3, ease: 'power2.out' })
+        });
+      }
+
+      gsap.to(imgEl, { x: 80, opacity: 0, duration: 0.12, ease: 'power3.in', onComplete: () => {
         imgEl.src = d.img || '';
         imgEl.style.height = d.imgHeight || '90vh';
         imgEl.style.top = d.imgTop !== undefined ? d.imgTop : '-4vh';
-        gsap.fromTo(imgEl, { x: 80, opacity: 0 }, { x: 0, opacity: d.img ? 1 : 0, duration: 0.3, ease: 'expo.out' });
+
+        // 2. 슬램인 (챔피언별 개성 모션)
+        gsap.set(imgEl, { opacity: 1 });
+        if (key === 'teemo') {
+          gsap.fromTo(imgEl,
+            { y: -300, x: 0, rotation: -4 },
+            { y: 0, x: 0, rotation: 0, duration: 1.2, ease: 'power1.out' }
+          );
+        } else if (key === 'ahri') {
+          gsap.fromTo(imgEl,
+            { x: 200, rotation: 12, scale: 0.85 },
+            { x: 0, rotation: 0, scale: 1, duration: 0.55, ease: 'back.out(1.4)',
+              onComplete: () => gsap.fromTo(imgEl, { x: 6 }, { x: 0, duration: 0.3, ease: 'elastic.out(3, 0.4)' })
+            }
+          );
+        } else if (key === 'boltz') {
+          gsap.fromTo(imgEl,
+            { scale: 0.4, x: 80, y: -30 },
+            { scale: 1, x: 0, y: 0, duration: 0.45, ease: 'expo.out',
+              onComplete: () => gsap.fromTo(champSection, { x: -10 }, { x: 0, duration: 0.3, ease: 'elastic.out(5, 0.3)' })
+            }
+          );
+        } else {
+          // 케이틀린 기본 슬램인
+          gsap.fromTo(imgEl,
+            { x: 120, scale: 1.06 },
+            { x: 0, scale: 1, duration: 0.35, ease: 'expo.out',
+              onComplete: () => gsap.fromTo(champSection, { x: -6 }, { x: 0, duration: 0.25, ease: 'elastic.out(4, 0.3)' })
+            }
+          );
+        }
 
         // 전환 완료 후 각 요소 등장
         champSection.classList.toggle('ahri-active', key === 'ahri');
@@ -414,16 +454,25 @@
       fills.forEach((f, i) => { f.style.width = vals[i] + '%'; });
     };
 
+    const goToChamp = (idx) => {
+      champIndex = (idx + champOrder.length) % champOrder.length;
+      const key = champOrder[champIndex];
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.champ === key));
+      switchChamp(key);
+    };
+
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        champIndex = champOrder.indexOf(tab.dataset.champ);
-        switchChamp(tab.dataset.champ);
+        goToChamp(champOrder.indexOf(tab.dataset.champ));
       });
     });
 
-    // 초기 배경색 설정
+    const prevBtn = champSection.querySelector('.champ-nav-prev');
+    const nextBtn = champSection.querySelector('.champ-nav-next');
+    if (prevBtn) prevBtn.addEventListener('click', () => goToChamp(champIndex - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => goToChamp(champIndex + 1));
+
+    // 초기 배경색 + subtitle 색 설정
     const initD = champData[champOrder[0]];
     if (initD && artBg) artBg.style.background = `linear-gradient(-14deg, #fff 0%, #fff 28%, ${initD.color} 28%, ${initD.color} 72%, #fff 72%, #fff 100%)`;
   }

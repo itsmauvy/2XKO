@@ -1246,6 +1246,15 @@ body {
   transform-origin: left center;
 }
 
+.champ-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+
 .champ-img {
   position: absolute;
   top: -4vh;
@@ -1505,7 +1514,7 @@ body {
   background: rgba(4,6,14,0.97);
   border-top: 1px solid rgba(255,255,255,0.06);
   z-index: 100;
-  clip-path: polygon(0 12px, 12px 0, 100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(0 12px, 12px 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
 }
 
 .champ-tab {
@@ -1537,7 +1546,14 @@ body {
 .champ-tab:last-child::after { display: none; }
 
 /* 호버 */
-.champ-tab:hover { opacity: 0.65; background: rgba(205,245,36,0.03); }
+.champ-tab:hover {
+  opacity: 1;
+  background: rgba(205,245,36,0.07);
+  box-shadow: inset 0 2px 0 rgba(205,245,36,0.5);
+}
+.champ-tab:hover .champ-tab-name {
+  color: rgba(255,255,255,0.95);
+}
 
 /* 활성 */
 .champ-tab.active {
@@ -1566,10 +1582,25 @@ body {
   transition: color 0.25s;
 }
 .champ-tab.active .champ-tab-name {
-  color: #fff;
-  text-shadow: 0 0 16px rgba(205,245,36,0.25);
+  color: #CDF524;
+  text-shadow: 0 0 16px rgba(205,245,36,0.5);
 }
 .champ-tab:hover .champ-tab-name { color: rgba(255,255,255,0.9); }
+
+.champ-nav-btn {
+  flex: 0 0 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  color: rgba(255,255,255,0.85);
+  transition: color 0.2s, background 0.2s;
+}
+.champ-nav-btn:last-child { border-right: none; border-left: 1px solid rgba(255,255,255,0.06); }
+.champ-nav-btn:hover { color: #CDF524; background: rgba(205,245,36,0.06); }
 
 @media (max-width: 900px) {
   .navbar {
