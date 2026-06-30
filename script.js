@@ -533,11 +533,25 @@
     let dragStartX = 0;
     let isDragging = false;
 
-    const CARD_W = 460;
-    const FEATURED_W = 560;
-    const CARD_GAP = 20;
+    const getCardSizes = () => {
+      const areaW = newsCarousel.closest('.news-carousel-area').offsetWidth;
+      return {
+        FEATURED_W: Math.round(areaW * 0.62),
+        CARD_W:     Math.round(areaW * 0.46),
+        CARD_GAP:   Math.round(areaW * 0.03),
+      };
+    };
+    let { FEATURED_W, CARD_W, CARD_GAP } = getCardSizes();
     const FEATURED_SCALE = 1;
     const SIDE_SCALE = 1;
+
+    const newsSection = document.querySelector('.news-section');
+    const updateSectionBg = (idx) => {
+      const item = filteredData[idx];
+      if (!item || !newsSection) return;
+      newsSection.style.transition = 'background 0.5s ease';
+      newsSection.style.background = item.bg.replace('160deg', '135deg');
+    };
 
     const buildNewsCards = () => {
       newsCarousel.innerHTML = '';
@@ -571,31 +585,45 @@
       });
 
       positionCards(false);
+      updateSectionBg(newsIndex);
       bindDrag();
     };
 
     const positionCards = (animate = true) => {
+      ({ FEATURED_W, CARD_W, CARD_GAP } = getCardSizes());
       const cards = newsCarousel.querySelectorAll('.news-card');
       const areaW = newsCarousel.closest('.news-carousel-area').offsetWidth;
       const areaH = newsCarousel.closest('.news-carousel-area').offsetHeight;
       const centerX = areaW / 2 - FEATURED_W / 2;
 
+      const total = cards.length;
       cards.forEach((card, i) => {
-        const offset = i - newsIndex;
+        // 순환 offset: 항상 최단 경로로 계산
+        let offset = i - newsIndex;
+        if (offset > total / 2)  offset -= total;
+        if (offset < -total / 2) offset += total;
+
         const isFeat = offset === 0;
-        const cardH = isFeat ? 420 : 345;
-        const cw = isFeat ? FEATURED_W : CARD_W;
-        const x = isFeat
-          ? centerX
-          : offset < 0
-            ? centerX - (CARD_W + CARD_GAP)
-            : centerX + FEATURED_W + CARD_GAP;
-        const opacity = Math.abs(offset) > 1 ? 0.3 : isFeat ? 1 : 0.6;
-        const zIndex = isFeat ? 10 : 5;
+        const absOff = Math.abs(offset);
+        const cardH = isFeat ? Math.round(FEATURED_W * 0.75) : Math.round(CARD_W * 0.75);
+
+        let x;
+        if (isFeat) {
+          x = centerX;
+        } else if (offset < 0) {
+          x = centerX - (CARD_W + CARD_GAP) - (absOff - 1) * (CARD_W + CARD_GAP);
+        } else {
+          x = centerX + FEATURED_W + CARD_GAP + (absOff - 1) * (CARD_W + CARD_GAP);
+        }
+
+        const opacity = absOff === 0 ? 1 : absOff === 1 ? 0.6 : 0;
+        const zIndex = isFeat ? 10 : Math.max(1, 5 - absOff);
         const y = (areaH - cardH) / 2;
 
         card.classList.toggle('is-featured', isFeat);
         card.style.zIndex = zIndex;
+        card.style.width = (isFeat ? FEATURED_W : CARD_W) + 'px';
+        card.style.height = cardH + 'px';
 
         if (animate) {
           gsap.to(card, { x, y, opacity, duration: 0.45, ease: 'power2.out' });
@@ -613,20 +641,66 @@
     const goNews = (idx) => {
       newsIndex = ((idx % filteredData.length) + filteredData.length) % filteredData.length;
       positionCards(true);
+      updateSectionBg(newsIndex);
     };
 
     const bindDrag = () => {
+      let dragCurrentX = 0;
+
       newsCarousel.addEventListener('pointerdown', (e) => {
         isDragging = true;
         dragStartX = e.clientX;
+        dragCurrentX = e.clientX;
         newsCarousel.setPointerCapture(e.pointerId);
+        newsCarousel.style.cursor = 'grabbing';
       });
+
+      newsCarousel.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        dragCurrentX = e.clientX;
+        const dx = dragCurrentX - dragStartX;
+
+        const cards = newsCarousel.querySelectorAll('.news-card');
+        const areaW = newsCarousel.closest('.news-carousel-area').offsetWidth;
+        const areaH = newsCarousel.closest('.news-carousel-area').offsetHeight;
+        const centerX = areaW / 2 - FEATURED_W / 2;
+
+        cards.forEach((card, i) => {
+          const offset = i - newsIndex;
+          const isFeat = offset === 0;
+          const absOff = Math.abs(offset);
+          const cardH = isFeat ? Math.round(FEATURED_W * 0.75) : Math.round(CARD_W * 0.75);
+
+          let baseX;
+          if (isFeat) {
+            baseX = centerX;
+          } else if (offset < 0) {
+            baseX = centerX - (CARD_W + CARD_GAP) - (absOff - 1) * (CARD_W + CARD_GAP);
+          } else {
+            baseX = centerX + FEATURED_W + CARD_GAP + (absOff - 1) * (CARD_W + CARD_GAP);
+          }
+
+          const y = (areaH - cardH) / 2;
+          const resistance = absOff > 0 ? 0.6 : 1;
+          gsap.set(card, { x: baseX + dx * resistance, y });
+        });
+      });
+
       newsCarousel.addEventListener('pointerup', (e) => {
         if (!isDragging) return;
         isDragging = false;
+        newsCarousel.style.cursor = '';
         const dx = e.clientX - dragStartX;
         if (dx < -50) goNews(newsIndex + 1);
         else if (dx > 50) goNews(newsIndex - 1);
+        else positionCards(true);
+      });
+
+      newsCarousel.addEventListener('pointercancel', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        newsCarousel.style.cursor = '';
+        positionCards(true);
       });
     };
 
