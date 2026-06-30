@@ -477,6 +477,180 @@
     if (initD && artBg) artBg.style.background = `linear-gradient(-14deg, #fff 0%, #fff 28%, ${initD.color} 28%, ${initD.color} 72%, #fff 72%, #fff 100%)`;
   }
 
+  // ===================== NEWS SECTION =====================
+  const newsCarousel = document.getElementById('newsCarousel');
+  const newsDots = document.getElementById('newsDots');
+
+  const newsData = [
+    {
+      tag: 'NEW CHAMPION', category: '신규 챔피언',
+      title: '케이틀린 참전!',
+      desc: '정밀한 한 방, 완벽한 제압. 필트오버의 보안관 케이틀린이 2XKO에 합류합니다.',
+      bg: 'linear-gradient(160deg, #2a1550 0%, #0d0a2a 100%)',
+      type: 'champion',
+    },
+    {
+      tag: 'FEATURED', category: 'PATCH NOTES', featured: true,
+      title: '2XKO 패치 0.3.0\n밸런스 조정 및 신규 기능 추가!',
+      desc: '챔피언 밸런스 조정, 연습 모드 개선, 랭크 시즌 보상 업데이트 등 다양한 변화가 적용되었습니다. 지금 바로 확인하세요!',
+      bg: 'linear-gradient(160deg, #0a1e4a 0%, #04162e 100%)',
+      type: 'update',
+    },
+    {
+      tag: 'EVENT', category: '',
+      title: '2XKO\n오픈 베타 테스트\n6월 12일 시작!',
+      desc: '친구와 함께 2XKO를 가장 먼저 경험하세요. 보상 이벤트 및 스트리머 드롭스 진행!',
+      bg: 'linear-gradient(160deg, #1a2e04 0%, #0a1a00 100%)',
+      type: 'event',
+    },
+    {
+      tag: 'UPDATE', category: '업데이트',
+      title: '새로운 아레나 맵\n업데이트 공개!',
+      desc: '필트오버 도심부를 배경으로 한 새로운 전투 무대가 추가됩니다.',
+      bg: 'linear-gradient(160deg, #1a0a2e 0%, #0d0520 100%)',
+      type: 'update',
+    },
+    {
+      tag: 'NOTICE', category: '공지',
+      title: '시즌 2 랭크\n사전 등록 시작',
+      desc: '시즌 2 랭크 모드 사전 등록을 지금 바로 시작하세요. 특별 보상이 기다립니다.',
+      bg: 'linear-gradient(160deg, #0a1e1a 0%, #040e0c 100%)',
+      type: 'notice',
+    },
+    {
+      tag: 'VIDEO', category: '영상',
+      title: '2XKO 공식\n게임플레이 트레일러',
+      desc: '신규 챔피언과 새로운 시스템을 담은 공식 게임플레이 트레일러를 확인하세요.',
+      bg: 'linear-gradient(160deg, #1e0a0a 0%, #140404 100%)',
+      type: 'video',
+    },
+  ];
+
+  if (newsCarousel && newsDots) {
+    let newsIndex = 1; // 가운데 featured 카드 시작
+    let allNewsData = [...newsData];
+    let filteredData = [...allNewsData];
+    let dragStartX = 0;
+    let isDragging = false;
+
+    const CARD_W = 460;
+    const FEATURED_W = 560;
+    const CARD_GAP = 20;
+    const FEATURED_SCALE = 1;
+    const SIDE_SCALE = 1;
+
+    const buildNewsCards = () => {
+      newsCarousel.innerHTML = '';
+      newsDots.innerHTML = '';
+
+      filteredData.forEach((item, i) => {
+        // 카드
+        const card = document.createElement('div');
+        card.className = 'news-card' + (i === newsIndex ? ' is-featured' : '');
+        card.dataset.index = i;
+        card.innerHTML = `
+          <div class="news-card-inner">
+            <div class="news-card-bg" style="background:${item.bg}"></div>
+            <div class="news-card-overlay"></div>
+            <span class="news-card-tag">${item.tag}</span>
+            <div class="news-card-body">
+              ${item.category ? `<p class="news-card-category">${item.category}</p>` : ''}
+              <h3 class="news-card-title">${item.title.replace(/\n/g,'<br>')}</h3>
+              <p class="news-card-desc">${item.desc}</p>
+              <button class="news-card-btn">자세히 보기 <svg viewBox="0 0 24 8" width="28" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="0" y1="4" x2="22" y2="4"/><polyline points="18,1 22,4 18,7"/></svg></button>
+            </div>
+          </div>`;
+        newsCarousel.appendChild(card);
+
+        // 도트
+        const dot = document.createElement('button');
+        dot.className = 'news-dot' + (i === newsIndex ? ' active' : '');
+        dot.setAttribute('aria-label', `뉴스 ${i + 1}`);
+        dot.addEventListener('click', () => goNews(i));
+        newsDots.appendChild(dot);
+      });
+
+      positionCards(false);
+      bindDrag();
+    };
+
+    const positionCards = (animate = true) => {
+      const cards = newsCarousel.querySelectorAll('.news-card');
+      const areaW = newsCarousel.closest('.news-carousel-area').offsetWidth;
+      const areaH = newsCarousel.closest('.news-carousel-area').offsetHeight;
+      const centerX = areaW / 2 - FEATURED_W / 2;
+
+      cards.forEach((card, i) => {
+        const offset = i - newsIndex;
+        const isFeat = offset === 0;
+        const cardH = isFeat ? 420 : 345;
+        const cw = isFeat ? FEATURED_W : CARD_W;
+        const x = isFeat
+          ? centerX
+          : offset < 0
+            ? centerX - (CARD_W + CARD_GAP)
+            : centerX + FEATURED_W + CARD_GAP;
+        const opacity = Math.abs(offset) > 1 ? 0.3 : isFeat ? 1 : 0.6;
+        const zIndex = isFeat ? 10 : 5;
+        const y = (areaH - cardH) / 2;
+
+        card.classList.toggle('is-featured', isFeat);
+        card.style.zIndex = zIndex;
+
+        if (animate) {
+          gsap.to(card, { x, y, opacity, duration: 0.45, ease: 'power2.out' });
+        } else {
+          gsap.set(card, { x, y, opacity });
+        }
+      });
+
+      // 도트 업데이트
+      newsDots.querySelectorAll('.news-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === newsIndex);
+      });
+    };
+
+    const goNews = (idx) => {
+      newsIndex = ((idx % filteredData.length) + filteredData.length) % filteredData.length;
+      positionCards(true);
+    };
+
+    const bindDrag = () => {
+      newsCarousel.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        dragStartX = e.clientX;
+        newsCarousel.setPointerCapture(e.pointerId);
+      });
+      newsCarousel.addEventListener('pointerup', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const dx = e.clientX - dragStartX;
+        if (dx < -50) goNews(newsIndex + 1);
+        else if (dx > 50) goNews(newsIndex - 1);
+      });
+    };
+
+    // 화살표
+    const newsPrev = document.querySelector('.news-nav--prev');
+    const newsNext = document.querySelector('.news-nav--next');
+    if (newsPrev) newsPrev.addEventListener('click', () => goNews(newsIndex - 1));
+    if (newsNext) newsNext.addEventListener('click', () => goNews(newsIndex + 1));
+
+    // 필터
+    document.querySelectorAll('.news-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.news-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        filteredData = f === 'all' ? [...allNewsData] : allNewsData.filter(n => n.type === f);
+        newsIndex = Math.min(newsIndex, Math.max(0, filteredData.length - 1));
+        buildNewsCards();
+      });
+    });
+
+    buildNewsCards();
+  }
+
   // Hero inline video
   const heroInlineWrap = document.querySelector('.hero-inline-video');
   const heroInlinePlayer = document.querySelector('.hero-inline-player');
