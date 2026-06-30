@@ -980,7 +980,7 @@ body {
 .champ-bg-name {
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 55%;
   transform: translate(-50%, -50%);
   font-family: 'Bebas Neue', sans-serif;
   font-size: clamp(160px, 22vw, 340px);
@@ -993,7 +993,7 @@ body {
 }
 
 .champ-bg-name--light {
-  color: rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.12);
 }
 
 .champ-bg-name--dark {
@@ -1007,7 +1007,7 @@ body {
   display: grid;
   grid-template-columns: clamp(480px, 50vw, 760px) 1fr;
   align-items: center;
-  height: calc(100% - 80px);
+  height: calc(100% - 72px);
   padding: 0 48px 0 80px;
 }
 
@@ -1037,9 +1037,8 @@ body {
   letter-spacing: -0.01em;
   margin-bottom: 18px;
   text-shadow:
-    0 0 20px rgba(0,0,0,0.6),
-    2px 2px 0 rgba(0,0,0,0.5),
-    -1px -1px 0 rgba(0,0,0,0.3);
+    0 0 14px rgba(0,0,0,0.25),
+    1px 1px 0 rgba(0,0,0,0.2);
   -webkit-text-stroke: 1px rgba(255,255,255,0.15);
 }
 
@@ -1070,8 +1069,9 @@ body {
 
 .champ-quote-wrap {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
   margin-bottom: 36px;
 }
 
@@ -1080,30 +1080,66 @@ body {
 }
 
 .champ-voice-btn {
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border: 2px solid #CDF524;
-  background: transparent;
-  color: #CDF524;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 0;
-  line-height: 1;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(205,245,36,0.35);
+  color: rgba(205,245,36,0.75);
+  padding: 6px 14px 6px 10px;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
 }
 
 .champ-voice-btn:hover {
-  background: #CDF524;
-  color: #0a0a0f;
+  color: #CDF524;
+  border-color: #CDF524;
+  background: rgba(205,245,36,0.06);
+  box-shadow: 0 0 14px rgba(205,245,36,0.25);
 }
 
 .champ-voice-btn.playing {
-  background: #CDF524;
-  color: #0a0a0f;
+  color: #CDF524;
+  border-color: #CDF524;
+  box-shadow: 0 0 20px rgba(205,245,36,0.4);
+}
+
+/* 웨이브 바 */
+.voice-waves {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 14px;
+}
+.voice-waves span {
+  display: block;
+  width: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  animation: none;
+  opacity: 0.5;
+}
+.voice-waves span:nth-child(1) { height: 6px; }
+.voice-waves span:nth-child(2) { height: 10px; }
+.voice-waves span:nth-child(3) { height: 4px; }
+
+.champ-voice-btn.playing .voice-waves span {
+  opacity: 1;
+  animation: voiceWave 0.6s ease-in-out infinite alternate;
+}
+.champ-voice-btn.playing .voice-waves span:nth-child(2) { animation-delay: 0.15s; }
+.champ-voice-btn.playing .voice-waves span:nth-child(3) { animation-delay: 0.3s; }
+
+.voice-label { pointer-events: none; }
+
+@keyframes voiceWave {
+  from { transform: scaleY(0.5); }
+  to   { transform: scaleY(1.4); }
 }
 
 .champ-quote {
@@ -1140,7 +1176,7 @@ body {
 
 .champ-meta {
   display: flex;
-  gap: 36px;
+  gap: 56px;
   font-size: 23px;
   letter-spacing: 0.08em;
   color: rgba(255,255,255,0.85);
@@ -1152,6 +1188,36 @@ body {
   color: #CDF524;
   margin-bottom: 5px;
   letter-spacing: 0.15em;
+}
+
+.champ-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 12px 28px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.2em;
+  color: #0a0a0f;
+  background: #CDF524;
+  text-decoration: none;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.champ-cta span {
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.champ-cta:hover {
+  background: #fff;
+  box-shadow: 0 0 20px rgba(205,245,36,0.4);
+}
+
+.champ-cta:hover span {
+  transform: translateX(4px);
 }
 
 .champ-art {
@@ -1177,7 +1243,6 @@ body {
   );
   transition: background 0.5s ease;
   z-index: 0;
-  transform: scaleX(0);
   transform-origin: left center;
 }
 
@@ -1188,13 +1253,12 @@ body {
   right: 28%;
   margin: 0 auto;
   z-index: 1;
-  height: 90vh;
+  height: 175vh;
   width: auto;
   max-width: none;
   object-fit: contain;
   object-position: top center;
   transition: opacity 0.4s ease;
-  opacity: 0;
 }
 
 .champ-orb {
@@ -1209,8 +1273,8 @@ body {
 
 .skill-preview {
   position: absolute;
-  bottom: 80px;
-  right: 2%;
+  bottom: 60px;
+  right: 0;
   z-index: 3;
   width: clamp(260px, 26vw, 420px);
 }
@@ -1218,7 +1282,7 @@ body {
 /* HUD 상단 라벨바 — 영상 위 오버레이 */
 .skill-preview-label {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 13px;
+  font-size: 11px;
   letter-spacing: 0.22em;
   color: #CDF524;
   background: rgba(10,10,15,0.88);
@@ -1345,6 +1409,39 @@ body {
   display: block;
 }
 
+/* 플레이 버튼 오버레이 — 앞 카드(z-index 최고)에만 표시 */
+.skill-play-btn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.skill-stack:hover .skill-play-btn {
+  opacity: 1;
+}
+
+.skill-play-btn-inner {
+  width: 48px;
+  height: 48px;
+  border: 2px solid rgba(255,255,255,0.9);
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+.skill-play-btn-inner svg {
+  margin-left: 3px;
+}
+
 .champ-mush {
   position: absolute;
   z-index: 2;
@@ -1390,48 +1487,80 @@ body {
   transition: width 0.6s ease;
 }
 
+/* ── 챔피언 셀렉터 ── */
 .champ-selector {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
+  height: 72px;
   display: flex;
-  border-top: 1px solid rgba(0,0,0,0.1);
-  background: #fff;
+  background: rgba(4,6,14,0.97);
+  border-top: 1px solid rgba(255,255,255,0.06);
   z-index: 100;
+  clip-path: polygon(0 12px, 12px 0, 100% 0, 100% 100%, 0 100%);
 }
 
 .champ-tab {
   flex: 1;
-  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border: none;
-  border-right: 1px solid rgba(0,0,0,0.08);
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px;
-  letter-spacing: 0.15em;
-  color: #aaa;
+  border-right: 1px solid rgba(255,255,255,0.06);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
   position: relative;
+  overflow: hidden;
+  opacity: 0.35;
+  transition: opacity 0.25s, background 0.25s;
+  padding: 0 16px;
 }
+.champ-tab:last-child { border-right: none; }
 
+/* 사선 구분선 효과 */
 .champ-tab::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: #CDF524;
-  transform: scaleX(0);
-  transition: transform 0.25s ease;
+  right: -1px; top: 15%; bottom: 15%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(205,245,36,0.12) 40%, rgba(205,245,36,0.12) 60%, transparent);
+  transform: skewX(-10deg);
+}
+.champ-tab:last-child::after { display: none; }
+
+/* 호버 */
+.champ-tab:hover { opacity: 0.65; background: rgba(205,245,36,0.03); }
+
+/* 활성 */
+.champ-tab.active {
+  opacity: 1;
+  background: rgba(205,245,36,0.06);
 }
 
-.champ-tab:hover { color: #0a0a0f; }
-.champ-tab:hover::after { transform: scaleX(1); }
-.champ-tab.active { color: #0a0a0f; font-weight: 900; }
-.champ-tab.active::after { transform: scaleX(1); }
+/* 상단 네온 라인 */
+.champ-tab.active::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: #CDF524;
+  box-shadow: 0 0 12px rgba(205,245,36,0.7), 0 0 4px #CDF524;
+}
+
+/* 이름 */
+.champ-tab-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 17px;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.8);
+  white-space: nowrap;
+  line-height: 1;
+  transition: color 0.25s;
+}
+.champ-tab.active .champ-tab-name {
+  color: #fff;
+  text-shadow: 0 0 16px rgba(205,245,36,0.25);
+}
+.champ-tab:hover .champ-tab-name { color: rgba(255,255,255,0.9); }
 
 @media (max-width: 900px) {
   .navbar {

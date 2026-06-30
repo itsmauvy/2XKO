@@ -102,12 +102,12 @@
       name: '케이틀린',
       subtitle: '필트오버의 보안관',
       desc: '날카로운 눈썰미로 범죄자를 추적하고,<br>덫과 정밀한 사격으로 상대를 제압합니다.',
-      quote: '빵, 헤드샷.',
+      quote: '어디, 이번 사건도 파헤쳐볼까?',
       role: '공간 장악',
       style: '원거리 견제 / 거리 유지',
       img: 'images/caitlyn character.png',
-      imgHeight: '180vh',
-      voiceFile: '',
+      imgHeight: '175vh',
+      voiceFile: 'video/caitlyn voice.MP3',
       skillVideos: ['video/caitlyn ulti.webm', 'video/caitlyn skill preview.webm', 'video/caitlyn skill trap.webm'],
       stats: { difficulty: 45, speed: 55, power: 70, range: 90 },
     },
@@ -121,7 +121,7 @@
       role: 'SPECIALIST',
       style: 'TRAP / PRESSURE',
       img: 'images/teemo img.png',
-      imgHeight: '90vh',
+      imgHeight: '87vh',
       imgTop: '-5vh',
       skillVideos: [],
       stats: { difficulty: 65, speed: 70, power: 55, range: 65 },
@@ -136,7 +136,7 @@
       role: 'ASSASSIN',
       style: 'RUSH DOWN / MIX-UP',
       img: 'images/ahri character.png',
-      imgHeight: '180vh',
+      imgHeight: '175vh',
       skillVideos: [],
       stats: { difficulty: 60, speed: 80, power: 70, range: 75 },
     },
@@ -150,7 +150,7 @@
       role: 'FIGHTER',
       style: 'RUSHDOWN / PRESSURE',
       img: 'images/blitzcrank character.png',
-      imgHeight: '90vh',
+      imgHeight: '87vh',
       skillVideos: [],
       stats: { difficulty: 55, speed: 85, power: 75, range: 45 },
     },
@@ -174,9 +174,12 @@
     let skillIndex = 0;
     let voiceAudio = null;
 
+    const champOrder = ['caitlyn', 'teemo', 'ahri', 'boltz'];
+    let champIndex = 0;
+
     if (voiceBtn) {
       voiceBtn.addEventListener('click', () => {
-        const key = champSection.querySelector('.champ-tab.active')?.dataset.champ;
+        const key = champOrder[champIndex];
         const src = champData[key]?.voiceFile;
         if (!src) return;
         if (voiceAudio) { voiceAudio.pause(); voiceAudio.currentTime = 0; }
@@ -222,6 +225,7 @@
         const vid = document.createElement('video');
         vid.muted = true;
         vid.playsInline = true;
+        vid.autoplay = true;
         vid.src = videos[i % videos.length];
         card.appendChild(vid);
         skillStack.appendChild(card);
@@ -281,6 +285,7 @@
         const newVid = document.createElement('video');
         newVid.muted = true;
         newVid.playsInline = true;
+        newVid.autoplay = true;
         newVid.src = vids[skillIndex % vids.length];
         newCard.appendChild(newVid);
         skillStack.insertBefore(newCard, skillStack.firstChild);
@@ -289,6 +294,11 @@
         gsap.set(newCard, { x: backDepth * -6, y: backDepth * 6, scale: 1 - backDepth * 0.03, zIndex: 0 });
       }
     };
+    // 스킬 프리뷰 클릭 → 카드 전환
+    const skillPlayBtn = skillPreviewEl.querySelector('.skill-play-btn');
+    if (skillPlayBtn) skillPlayBtn.addEventListener('click', swapCard);
+    skillStack.addEventListener('click', swapCard);
+
     const artBg = champSection.querySelector('.champ-art-bg');
     const fills = champSection.querySelectorAll('.champ-stat-fill');
 
@@ -296,46 +306,64 @@
     const champOrb = champSection.querySelector('.champ-orb');
     const champMushs = document.querySelectorAll('.champ-mush');
 
-    // 섹션 진입 인트로 애니메이션
+    // 초기 캐릭터 데이터 즉시 적용 (스크롤 여부와 무관)
+    const activeKey0 = champOrder[champIndex];
+    const activeData0 = champData[activeKey0];
+    if (activeData0) {
+      imgEl.style.height = activeData0.imgHeight || '90vh';
+      if (activeData0.imgTop !== undefined) imgEl.style.top = activeData0.imgTop;
+      buildStack(activeData0.skillVideos);
+    }
+
+    // 섹션 진입 인트로 애니메이션 (슬라이드인 효과)
     let introPlayed = false;
     const playIntro = () => {
       if (introPlayed) return;
       introPlayed = true;
 
-      // 현재 활성 캐릭터 데이터로 높이/마진 초기 적용
-      const activeKey = champSection.querySelector('.champ-tab.active')?.dataset.champ;
+      const activeKey = champOrder[champIndex];
       const activeData = champData[activeKey];
       if (activeData) {
         imgEl.style.height = activeData.imgHeight || '90vh';
-        imgEl.style.top = activeData.imgTop || '6vh';
-        buildStack(activeData.skillVideos);
+        if (activeData.imgTop !== undefined) imgEl.style.top = activeData.imgTop;
       }
 
       // 초기 상태 세팅
-      gsap.set(artBg, { scaleX: 0, transformOrigin: 'left center' });
       gsap.set(imgEl, { x: 120, opacity: 0 });
       gsap.set(champOrb, { x: 80, opacity: 0, scale: 0.6 });
       gsap.set(champPanel.children, { x: -40, opacity: 0 });
 
-      const tl = gsap.timeline();
-
       const isAhri = activeKey === 'ahri';
 
-      // 1. 빨간 배경 쾅
-      tl.to(artBg, { scaleX: 1, duration: 0.45, ease: 'expo.out' })
-        // 2. 캐릭터 슬램인
-        .to(imgEl, { x: 0, opacity: 1, duration: 0.35, ease: 'expo.out' }, '-=0.05')
-        // 3. 오브 팝 (ahri만)
+      const tl = gsap.timeline({
+        onComplete: () => {},
+        onInterrupt: () => {
+          gsap.set(imgEl, { x: 0, opacity: 1 });
+          gsap.set(champPanel.children, { x: 0, opacity: 1 });
+        }
+      });
+
+      // 캐릭터 슬램인
+      tl.to(imgEl, { x: 0, opacity: 1, duration: 0.35, ease: 'expo.out' })
+        // 오브 팝 (ahri만)
         .to(champOrb, { x: 0, opacity: isAhri ? 1 : 0, scale: 1, duration: 0.4, ease: 'back.out(2)' }, '-=0.2')
-        // 4. 텍스트 순차 등장
+        // 텍스트 순차 등장
         .to(champPanel.children, { x: 0, opacity: 1, duration: 0.3, stagger: 0.06, ease: 'power2.out' }, '-=0.15');
     };
 
-    // IntersectionObserver로 섹션 진입 감지
+    // 섹션이 뷰포트에 들어오면 playIntro 실행 (viewport 기준)
     const champObserver = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) playIntro(); });
-    }, { root: snapWrap, threshold: 0.4 });
+    }, { threshold: 0.3 });
     champObserver.observe(champSection);
+
+    // snap 스크롤 이벤트 fallback
+    const onSnapScroll = () => {
+      if (introPlayed) { snapWrap.removeEventListener('scroll', onSnapScroll); return; }
+      const rect = champSection.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.7 && rect.bottom > 0) playIntro();
+    };
+    snapWrap.addEventListener('scroll', onSnapScroll, { passive: true });
 
     const switchChamp = (key) => {
       const d = champData[key];
@@ -362,7 +390,7 @@
       gsap.to(imgEl, { x: 60, opacity: 0, duration: 0.15, ease: 'power2.in', onComplete: () => {
         imgEl.src = d.img || '';
         imgEl.style.height = d.imgHeight || '90vh';
-        imgEl.style.top = d.imgTop || '6vh';
+        if (d.imgTop !== undefined) imgEl.style.top = d.imgTop;
         gsap.fromTo(imgEl, { x: 80, opacity: 0 }, { x: 0, opacity: d.img ? 1 : 0, duration: 0.3, ease: 'expo.out' });
 
         // 전환 완료 후 각 요소 등장
@@ -384,16 +412,14 @@
       tab.addEventListener('click', () => {
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
+        champIndex = champOrder.indexOf(tab.dataset.champ);
         switchChamp(tab.dataset.champ);
       });
     });
 
-    // 초기 활성 탭 기준으로 배경색 설정
-    const activeTab = champSection.querySelector('.champ-tab.active');
-    if (activeTab && artBg) {
-      const d = champData[activeTab.dataset.champ];
-      if (d) artBg.style.background = `linear-gradient(-14deg, #fff 0%, #fff 28%, ${d.color} 28%, ${d.color} 72%, #fff 72%, #fff 100%)`;
-    }
+    // 초기 배경색 설정
+    const initD = champData[champOrder[0]];
+    if (initD && artBg) artBg.style.background = `linear-gradient(-14deg, #fff 0%, #fff 28%, ${initD.color} 28%, ${initD.color} 72%, #fff 72%, #fff 100%)`;
   }
 
   // Hero inline video
