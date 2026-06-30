@@ -1,4 +1,4 @@
-window.addEventListener('load', () => {
+﻿window.addEventListener('load', () => {
   if (window.gsap) {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
@@ -98,50 +98,60 @@ window.addEventListener('load', () => {
   const champData = {
     caitlyn: {
       color: '#092F75',
-      name: 'CAITLYN',
+      engName: 'CAITLYN',
+      name: '케이틀린',
       subtitle: '필트오버의 보안관',
-      desc: '텍스트 준비 중입니다.',
-      quote: '"범죄자들, 한 명씩 잡아드리죠."',
-      role: 'MARKSMAN',
-      style: 'ZONING / KEEP AWAY',
+      desc: '날카로운 눈썰미로 범죄자를 추적하고,<br>덫과 정밀한 사격으로 상대를 제압합니다.',
+      quote: '빵, 헤드샷.',
+      role: '공간 장악',
+      style: '원거리 견제 / 거리 유지',
       img: 'images/caitlyn character.png',
       imgHeight: '180vh',
+      voiceFile: '',
+      skillVideos: ['video/caitlyn ulti.webm', 'video/caitlyn skill preview.webm', 'video/caitlyn skill trap.webm'],
       stats: { difficulty: 45, speed: 55, power: 70, range: 90 },
     },
     teemo: {
       color: '#4caf2a',
-      name: 'TEEMO',
+      engName: 'TEEMO',
+      name: '티모',
       subtitle: '요들 정찰대',
       desc: '텍스트 준비 중입니다.',
-      quote: '"죽음은 독처럼 천천히 스며들지."',
+      quote: '죽음은 독처럼 천천히 스며들지.',
       role: 'SPECIALIST',
       style: 'TRAP / PRESSURE',
       img: 'images/teemo img.png',
       imgHeight: '90vh',
+      imgTop: '-5vh',
+      skillVideos: [],
       stats: { difficulty: 65, speed: 70, power: 55, range: 65 },
     },
     ahri: {
       color: '#e8174f',
-      name: 'AHRI',
+      engName: 'AHRI',
+      name: '아리',
       subtitle: '매혹적인 구미호',
       desc: '텍스트 준비 중입니다.',
-      quote: '"당신의 마음, 이미 제 손안에 있어요."',
+      quote: '당신의 마음, 이미 제 손안에 있어요.',
       role: 'ASSASSIN',
       style: 'RUSH DOWN / MIX-UP',
       img: 'images/ahri character.png',
       imgHeight: '180vh',
+      skillVideos: [],
       stats: { difficulty: 60, speed: 80, power: 70, range: 75 },
     },
     boltz: {
       color: '#f5a623',
-      name: 'BLITZCRANK',
+      engName: 'BLITZCRANK',
+      name: '블리츠크랭크',
       subtitle: '텍스트 준비 중입니다.',
       desc: '텍스트 준비 중입니다.',
-      quote: '"텍스트 준비 중입니다."',
+      quote: '텍스트 준비 중입니다.',
       role: 'FIGHTER',
       style: 'RUSHDOWN / PRESSURE',
       img: 'images/blitzcrank character.png',
       imgHeight: '90vh',
+      skillVideos: [],
       stats: { difficulty: 55, speed: 85, power: 75, range: 45 },
     },
   };
@@ -157,6 +167,128 @@ window.addEventListener('load', () => {
     const roleEl = champSection.querySelector('.champ-role');
     const styleEl = champSection.querySelector('.champ-style');
     const imgEl = champSection.querySelector('.champ-img');
+    const skillPreviewEl = champSection.querySelector('.skill-preview');
+    const skillStack = champSection.querySelector('.skill-stack');
+    const voiceBtn = champSection.querySelector('.champ-voice-btn');
+    let skillCards = [];
+    let skillIndex = 0;
+    let voiceAudio = null;
+
+    if (voiceBtn) {
+      voiceBtn.addEventListener('click', () => {
+        const key = champSection.querySelector('.champ-tab.active')?.dataset.champ;
+        const src = champData[key]?.voiceFile;
+        if (!src) return;
+        if (voiceAudio) { voiceAudio.pause(); voiceAudio.currentTime = 0; }
+        voiceAudio = new Audio(src);
+        voiceBtn.classList.add('playing');
+        voiceAudio.play().catch(() => {});
+        voiceAudio.addEventListener('ended', () => voiceBtn.classList.remove('playing'));
+      });
+    }
+
+    const dotsContainer = skillPreviewEl.querySelector('.skill-hud-dots');
+    let totalVideos = 0;
+    let currentVideoIndex = 0;
+
+    const updateDots = (activeIdx) => {
+      if (!dotsContainer) return;
+      dotsContainer.innerHTML = '';
+      for (let i = 0; i < totalVideos; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'skill-hud-dot' + (i === activeIdx ? ' active' : '');
+        dotsContainer.appendChild(dot);
+      }
+    };
+
+    const buildStack = (videos) => {
+      skillStack.innerHTML = '';
+      skillCards = [];
+      if (!videos || !videos.length) {
+        skillPreviewEl.style.display = 'none';
+        dotsContainer.innerHTML = '';
+        return;
+      }
+      skillPreviewEl.style.display = '';
+      totalVideos = videos.length;
+      currentVideoIndex = 0;
+      updateDots(0);
+
+      // 최대 3장 생성 — index 0 = 뒤, index count-1 = 앞(맨 위)
+      const count = Math.min(videos.length, 3);
+      for (let i = 0; i < count; i++) {
+        const card = document.createElement('div');
+        card.className = 'skill-card';
+        const vid = document.createElement('video');
+        vid.muted = true;
+        vid.playsInline = true;
+        vid.src = videos[i % videos.length];
+        card.appendChild(vid);
+        skillStack.appendChild(card);
+        skillCards.push(card);
+
+        const depth = count - 1 - i;
+        gsap.set(card, { x: depth * -6, y: depth * 6, scale: 1 - depth * 0.03, zIndex: i });
+      }
+
+      skillIndex = count - 1;
+      const frontVid = skillCards[skillCards.length - 1].querySelector('video');
+      frontVid.play().catch(() => {});
+      frontVid.addEventListener('ended', swapCard);
+    };
+
+    const swapCard = () => {
+      if (!skillCards.length) return;
+
+      // 앞 카드 = 배열 마지막
+      const outCard = skillCards.pop();
+      const outVid = outCard.querySelector('video');
+      outVid.removeEventListener('ended', swapCard);
+
+      // 앞 카드 위로 날리기
+      gsap.to(outCard, {
+        y: -160, opacity: 0, rotation: -8, duration: 0.5, ease: 'power2.in',
+        onComplete: () => outCard.remove(),
+      });
+
+      // 남은 카드들 앞으로 당기기 (마지막이 앞)
+      skillCards.forEach((card, i) => {
+        const depth = skillCards.length - 1 - i;
+        gsap.to(card, {
+          x: depth * -6, y: depth * 6, scale: 1 - depth * 0.03, zIndex: i + 1,
+          duration: 0.4, ease: 'power2.out',
+        });
+      });
+
+      // 다음 영상 재생 (새 앞 카드 = 마지막)
+      if (skillCards.length > 0) {
+        const nextVid = skillCards[skillCards.length - 1].querySelector('video');
+        nextVid.play().catch(() => {});
+        nextVid.addEventListener('ended', swapCard);
+      }
+
+      // dot 업데이트
+      currentVideoIndex = (currentVideoIndex + 1) % totalVideos;
+      updateDots(currentVideoIndex);
+
+      // 새 카드를 뒤(DOM 맨 앞, 배열 index 0)에 추가
+      const currentChampKey = champSection.querySelector('.champ-tab.active')?.dataset.champ;
+      const vids = champData[currentChampKey]?.skillVideos;
+      if (vids && vids.length > 1) {
+        skillIndex = (skillIndex + 1) % vids.length;
+        const newCard = document.createElement('div');
+        newCard.className = 'skill-card';
+        const newVid = document.createElement('video');
+        newVid.muted = true;
+        newVid.playsInline = true;
+        newVid.src = vids[skillIndex % vids.length];
+        newCard.appendChild(newVid);
+        skillStack.insertBefore(newCard, skillStack.firstChild);
+        skillCards.unshift(newCard);
+        const backDepth = skillCards.length - 1;
+        gsap.set(newCard, { x: backDepth * -6, y: backDepth * 6, scale: 1 - backDepth * 0.03, zIndex: 0 });
+      }
+    };
     const artBg = champSection.querySelector('.champ-art-bg');
     const fills = champSection.querySelectorAll('.champ-stat-fill');
 
@@ -170,6 +302,15 @@ window.addEventListener('load', () => {
       if (introPlayed) return;
       introPlayed = true;
 
+      // 현재 활성 캐릭터 데이터로 높이/마진 초기 적용
+      const activeKey = champSection.querySelector('.champ-tab.active')?.dataset.champ;
+      const activeData = champData[activeKey];
+      if (activeData) {
+        imgEl.style.height = activeData.imgHeight || '90vh';
+        imgEl.style.top = activeData.imgTop || '6vh';
+        buildStack(activeData.skillVideos);
+      }
+
       // 초기 상태 세팅
       gsap.set(artBg, { scaleX: 0, transformOrigin: 'left center' });
       gsap.set(imgEl, { x: 120, opacity: 0 });
@@ -178,7 +319,7 @@ window.addEventListener('load', () => {
 
       const tl = gsap.timeline();
 
-      const isAhri = champSection.querySelector('.champ-tab.active')?.dataset.champ === 'ahri';
+      const isAhri = activeKey === 'ahri';
 
       // 1. 빨간 배경 쾅
       tl.to(artBg, { scaleX: 1, duration: 0.45, ease: 'expo.out' })
@@ -199,37 +340,41 @@ window.addEventListener('load', () => {
     const switchChamp = (key) => {
       const d = champData[key];
       if (!d) return;
-      bgNames.forEach(el => el.textContent = d.name);
+
+      // 진행 중인 트윈 즉시 종료 (잔상 방지)
+      gsap.killTweensOf([imgEl, champOrb, ...champMushs]);
+      gsap.set(champOrb, { opacity: 0, scale: 0.6 });
+      champMushs.forEach(m => gsap.set(m, { opacity: 0, scale: 0.4 }));
+
+      bgNames.forEach(el => el.textContent = d.engName || d.name);
       nameEl.textContent = d.name;
       subtitleEl.textContent = d.subtitle;
-      descEl.textContent = d.desc;
+      descEl.innerHTML = d.desc;
       quoteEl.textContent = d.quote;
-      roleEl.innerHTML = `<strong>ROLE</strong> ${d.role}`;
-      styleEl.innerHTML = `<strong>STYLE</strong> ${d.style}`;
+      roleEl.innerHTML = `<strong>유형</strong> ${d.role}`;
+      styleEl.innerHTML = `<strong>전투 방식</strong> ${d.style}`;
       if (artBg) artBg.style.background = `linear-gradient(-14deg, #fff 0%, #fff 28%, ${d.color} 28%, ${d.color} 72%, #fff 72%, #fff 100%)`;
+
+      // 스킬 프리뷰 카드 스택 교체
+      buildStack(d.skillVideos);
 
       // 캐릭터 전환 임팩트
       gsap.to(imgEl, { x: 60, opacity: 0, duration: 0.15, ease: 'power2.in', onComplete: () => {
         imgEl.src = d.img || '';
         imgEl.style.height = d.imgHeight || '90vh';
+        imgEl.style.top = d.imgTop || '6vh';
         gsap.fromTo(imgEl, { x: 80, opacity: 0 }, { x: 0, opacity: d.img ? 1 : 0, duration: 0.3, ease: 'expo.out' });
-      }});
 
-      // orb: ahri만 표시
-      if (key === 'ahri') {
-        gsap.fromTo(champOrb, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2)', delay: 0.2 });
-      } else {
-        gsap.to(champOrb, { opacity: 0, scale: 0.6, duration: 0.2, ease: 'power2.in' });
-      }
-
-      // mush: teemo만 표시
-      champMushs.forEach((mush, i) => {
-        if (key === 'teemo') {
-          gsap.fromTo(mush, { opacity: 0, scale: 0.4, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'back.out(2)', delay: 0.3 + i * 0.1 });
-        } else {
-          gsap.to(mush, { opacity: 0, scale: 0.4, duration: 0.2, ease: 'power2.in' });
+        // 전환 완료 후 각 요소 등장
+        if (key === 'ahri') {
+          gsap.fromTo(champOrb, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2)' });
         }
-      });
+        if (key === 'teemo') {
+          champMushs.forEach((mush, i) => {
+            gsap.fromTo(mush, { opacity: 0, scale: 0.4, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'back.out(2)', delay: i * 0.1 });
+          });
+        }
+      }});
 
       const vals = [d.stats.difficulty, d.stats.speed, d.stats.power, d.stats.range];
       fills.forEach((f, i) => { f.style.width = vals[i] + '%'; });

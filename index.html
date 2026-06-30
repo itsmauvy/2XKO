@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2XKO - Fight As One</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Mako&family=Noto+Sans+KR:wght@400;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -135,22 +135,30 @@
 
     <section id="champions" class="champions">
       <div class="champ-art-bg"></div>
-      <img src="images/teemo mush.png" alt="" class="champ-mush champ-mush-1" aria-hidden="true" style="opacity:0" />
-      <img src="images/teemo mush.png" alt="" class="champ-mush champ-mush-2" aria-hidden="true" style="opacity:0" />
       <div class="champ-bg-name champ-bg-name--light" aria-hidden="true">CAITLYN</div>
       <div class="champ-bg-name champ-bg-name--dark" aria-hidden="true">CAITLYN</div>
 
       <div class="champ-layout">
         <!-- 왼쪽 패널 -->
         <div class="champ-panel">
-          <h2 class="champ-name">CAITLYN</h2>
+          <h2 class="champ-name">케이틀린</h2>
           <p class="champ-subtitle">필트오버의 보안관</p>
           <div class="champ-divider"></div>
-          <p class="champ-desc">텍스트 준비 중입니다.</p>
-          <blockquote class="champ-quote">"범죄자들, 한 명씩 잡아드리죠."</blockquote>
+          <p class="champ-desc">날카로운 눈썰미로 범죄자를 추적하고,<br>덫과 정밀한 사격으로 상대를 제압합니다.</p>
+          <div class="champ-quote-wrap">
+            <blockquote class="champ-quote">빵, 헤드샷.</blockquote>
+            <button class="champ-voice-btn" aria-label="대사 재생" type="button">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+                <rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor"/>
+                <path d="M5 11a7 7 0 0 0 14 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                <line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <line x1="8" y1="22" x2="16" y2="22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
           <div class="champ-meta">
-            <span class="champ-role"><strong>ROLE</strong> MARKSMAN</span>
-            <span class="champ-style"><strong>STYLE</strong> ZONING / KEEP AWAY</span>
+            <span class="champ-role"><strong>유형</strong> 공간 장악</span>
+            <span class="champ-style"><strong>전투 방식</strong> 원거리 견제 / 거리 유지</span>
           </div>
         </div>
 
@@ -158,35 +166,29 @@
         <div class="champ-art">
           <img src="images/caitlyn character.png" alt="Caitlyn" class="champ-img" />
           <img src="images/ahri orb.png" alt="" class="champ-orb" aria-hidden="true" style="opacity:0" />
+          <div class="skill-preview">
+            <p class="skill-preview-label">SKILLS PREVIEW</p>
+            <div class="skill-stack">
+              <div class="skill-corner skill-corner--tl"></div>
+              <div class="skill-corner skill-corner--tr"></div>
+            </div>
+            <div class="skill-hud-bar">
+              <div class="skill-hud-dots"></div>
+              <div class="skill-hud-accent">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- 오른쪽 스탯 -->
-        <div class="champ-stats">
-          <div class="champ-stat">
-            <span class="champ-stat-label">DIFFICULTY</span>
-            <div class="champ-stat-bar"><div class="champ-stat-fill" style="width:45%"></div></div>
-          </div>
-          <div class="champ-stat">
-            <span class="champ-stat-label">SPEED</span>
-            <div class="champ-stat-bar"><div class="champ-stat-fill" style="width:55%"></div></div>
-          </div>
-          <div class="champ-stat">
-            <span class="champ-stat-label">POWER</span>
-            <div class="champ-stat-bar"><div class="champ-stat-fill" style="width:70%"></div></div>
-          </div>
-          <div class="champ-stat">
-            <span class="champ-stat-label">RANGE</span>
-            <div class="champ-stat-bar"><div class="champ-stat-fill" style="width:90%"></div></div>
-          </div>
-        </div>
       </div>
 
       <!-- 하단 캐릭터 선택 -->
       <div class="champ-selector">
-        <button class="champ-tab active" data-champ="caitlyn">CAITLYN</button>
-        <button class="champ-tab" data-champ="teemo">TEEMO</button>
-        <button class="champ-tab" data-champ="ahri">AHRI</button>
-        <button class="champ-tab" data-champ="boltz">BLITZCRANK</button>
+        <button class="champ-tab active" data-champ="caitlyn">케이틀린</button>
+        <button class="champ-tab" data-champ="teemo">티모</button>
+        <button class="champ-tab" data-champ="ahri">아리</button>
+        <button class="champ-tab" data-champ="boltz">블리츠크랭크</button>
       </div>
     </section>
 
