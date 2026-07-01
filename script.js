@@ -160,6 +160,11 @@
     },
   };
 
+  // 챔피언 이미지 프리로드
+  Object.values(champData).forEach(d => {
+    if (d.img) { const img = new Image(); img.src = d.img; }
+  });
+
   const champSection = document.querySelector('.champions');
   if (champSection) {
     const tabs = champSection.querySelectorAll('.champ-tab');
@@ -483,46 +488,79 @@
 
   const newsData = [
     {
-      tag: 'NEW CHAMPION', category: '신규 챔피언',
-      title: '케이틀린 참전!',
-      desc: '정밀한 한 방, 완벽한 제압. 필트오버의 보안관 케이틀린이 2XKO에 합류합니다.',
-      bg: 'linear-gradient(160deg, #2a1550 0%, #0d0a2a 100%)',
-      type: 'champion',
-    },
-    {
-      tag: 'FEATURED', category: 'PATCH NOTES', featured: true,
-      title: '2XKO 패치 0.3.0\n밸런스 조정 및 신규 기능 추가!',
-      desc: '챔피언 밸런스 조정, 연습 모드 개선, 랭크 시즌 보상 업데이트 등 다양한 변화가 적용되었습니다. 지금 바로 확인하세요!',
-      bg: 'linear-gradient(160deg, #0a1e4a 0%, #04162e 100%)',
-      type: 'update',
-    },
-    {
-      tag: 'EVENT', category: '',
-      title: '2XKO\n오픈 베타 테스트\n6월 12일 시작!',
-      desc: '친구와 함께 2XKO를 가장 먼저 경험하세요. 보상 이벤트 및 스트리머 드롭스 진행!',
-      bg: 'linear-gradient(160deg, #1a2e04 0%, #0a1a00 100%)',
-      type: 'event',
-    },
-    {
-      tag: 'UPDATE', category: '업데이트',
-      title: '새로운 아레나 맵\n업데이트 공개!',
-      desc: '필트오버 도심부를 배경으로 한 새로운 전투 무대가 추가됩니다.',
-      bg: 'linear-gradient(160deg, #1a0a2e 0%, #0d0520 100%)',
-      type: 'update',
-    },
-    {
-      tag: 'NOTICE', category: '공지',
-      title: '시즌 2 랭크\n사전 등록 시작',
-      desc: '시즌 2 랭크 모드 사전 등록을 지금 바로 시작하세요. 특별 보상이 기다립니다.',
-      bg: 'linear-gradient(160deg, #0a1e1a 0%, #040e0c 100%)',
+      tag: 'ANNOUNCEMENTS', category: '공지',
+      title: '라이엇 게임즈 개인정보 처리방침\n변경 사항 안내',
+      desc: '개인정보 처리방침의 일부 내용이 변경됩니다.',
+      bgImg: 'images/jinx update bg.jpg',
+      charImg: 'images/jinx update character.png',
       type: 'notice',
     },
     {
-      tag: 'VIDEO', category: '영상',
-      title: '2XKO 공식\n게임플레이 트레일러',
-      desc: '신규 챔피언과 새로운 시스템을 담은 공식 게임플레이 트레일러를 확인하세요.',
-      bg: 'linear-gradient(160deg, #1e0a0a 0%, #140404 100%)',
-      type: 'video',
+      tag: 'ANNOUNCEMENTS', category: '공지',
+      title: 'PC방 전용 아바타\n아이템 안내',
+      desc: 'PC방에서만 사용 가능한 아바타 아이템을 소개합니다.',
+      bgImg: 'images/pc avatar bg.jpg',
+      items: ['images/avatar item headphone.png', 'images/avatar item riot.png', 'images/avatar item backpack.png'],
+      bg: 'linear-gradient(160deg, #0a1e2e 0%, #040e1c 100%)',
+      type: 'notice',
+    },
+    {
+      tag: '', category: '공지',
+      title: '세나 기술 목록',
+      desc: '세나의 모든 기술을 정리했습니다. 6월 10일에 2XKO에서 플레이하세요.',
+      youtubeId: '8xbRJvATrsI',
+      bg: 'linear-gradient(160deg, #1a0808 0%, #0d0404 100%)',
+      type: 'notice',
+    },
+    {
+      tag: 'UPDATE', category: '업데이트',
+      title: '정상 등반: 2XKO의\n새로운 PvE 모드',
+      desc: '좋아하는 챔피언으로 매번 색다른 빌드를 실험해 보세요. PvP에선 경험할 수 없었던 재미를 지금 소개합니다.',
+      bgImg: 'images/pve mode bg.jpg',
+      charImg: 'images/sena thresh.png',
+      bg: 'linear-gradient(160deg, #0a1e0a 0%, #040e04 100%)',
+      type: 'update',
+    },
+    {
+      tag: 'UPDATE', category: '업데이트',
+      title: '수영장 파티 메가 세트 출시',
+      desc: '분위기를 달굴 때로군요. 수영장 파티 및 야밤의 수영장 파티 메가 세트를 만나 보세요.',
+      youtubeId: 'enfAc20FFf4',
+      bg: 'linear-gradient(160deg, #0a1a2e 0%, #040a1c 100%)',
+      type: 'update',
+    },
+    {
+      tag: 'UPDATE', category: '업데이트',
+      title: '2XKO 긴급 패치: 1.1.5\n(2026년 4월 29일)',
+      desc: '이번 긴급 패치에서는 분노의 위력과 해방 미터 생성량, 관전 기능의 버그가 수정됩니다.',
+      bgImg: 'images/bug fix bg.jpg',
+      bg: 'linear-gradient(160deg, #1a0e0a 0%, #0d0604 100%)',
+      type: 'update',
+    },
+    {
+      tag: 'COMMUNITY', category: '커뮤니티',
+      title: '2026 EVO 2XKO\n부문 안내',
+      desc: '6월 26일, 2026 EVO의 막이 오릅니다. 2XKO 부문에 대해 알아야 할 모든 것을 지금 확인하세요.',
+      bgImg: 'images/2xko x evo bg.jpg',
+      logoItems: ['images/2xko major.png', 'images/evo.png'],
+      bg: 'linear-gradient(160deg, #1a0a2e 0%, #0d0520 100%)',
+      type: 'community',
+    },
+    {
+      tag: 'COMMUNITY', category: '커뮤니티',
+      title: '2026 EVO Japan:\n2XKO 부문 참가 신청 안내',
+      desc: '2XKO의 다음 메이저 대회가 EVO Japan에서 열립니다. 참가상인 핏빛달 아칼리 스킨도 기대해 주세요.',
+      bgImg: 'images/2xko x evo jp.jpg',
+      bg: 'linear-gradient(160deg, #0a1a2e 0%, #04101c 100%)',
+      type: 'community',
+    },
+    {
+      tag: 'COMMUNITY', category: '커뮤니티',
+      title: '2XKO 커뮤니티 대회 지원\n- 프로그램 개시',
+      desc: '2XKO의 지역 대회에 참가하고 게임 내 보상을 획득하세요. 전 세계 플레이어를 대상으로 시행됩니다.',
+      bgImg: 'images/community.jpg',
+      bg: 'linear-gradient(160deg, #0a1a1a 0%, #040e0e 100%)',
+      type: 'community',
     },
   ];
 
@@ -536,9 +574,9 @@
     const getCardSizes = () => {
       const areaW = newsCarousel.closest('.news-carousel-area').offsetWidth;
       return {
-        FEATURED_W: Math.round(areaW * 0.62),
-        CARD_W:     Math.round(areaW * 0.46),
-        CARD_GAP:   Math.round(areaW * 0.03),
+        FEATURED_W: Math.round(areaW * 0.50),
+        CARD_W:     Math.round(areaW * 0.38),
+        CARD_GAP:   Math.round(areaW * 0.02),
       };
     };
     let { FEATURED_W, CARD_W, CARD_GAP } = getCardSizes();
@@ -546,11 +584,23 @@
     const SIDE_SCALE = 1;
 
     const newsSection = document.querySelector('.news-section');
+    const newsBgEl = document.getElementById('newsBg');
     const updateSectionBg = (idx) => {
       const item = filteredData[idx];
-      if (!item || !newsSection) return;
-      newsSection.style.transition = 'background 0.5s ease';
-      newsSection.style.background = item.bg.replace('160deg', '135deg');
+      if (!item) return;
+      if (newsBgEl) {
+        if (item.bgImg) {
+          newsBgEl.style.backgroundImage = `url('${item.bgImg}')`;
+          newsBgEl.classList.add('has-img');
+        } else {
+          newsBgEl.classList.remove('has-img');
+          newsBgEl.style.backgroundImage = '';
+        }
+      }
+      if (newsSection && item.bg) {
+        newsSection.style.transition = 'background 0.5s ease';
+        newsSection.style.background = item.bg.replace('160deg', '135deg');
+      }
     };
 
     const buildNewsCards = () => {
@@ -562,19 +612,38 @@
         const card = document.createElement('div');
         card.className = 'news-card' + (i === newsIndex ? ' is-featured' : '');
         card.dataset.index = i;
+        const bgStyle = item.bgImg
+          ? `background-image:url('${item.bgImg}');background-size:cover;background-position:center`
+          : `background:${item.bg || '#0d1629'}`;
+        const bgClass = item.bgImg ? 'news-card-bg has-img' : 'news-card-bg';
         card.innerHTML = `
           <div class="news-card-inner">
-            <div class="news-card-bg" style="background:${item.bg}"></div>
-            <div class="news-card-overlay"></div>
-            <span class="news-card-tag">${item.tag}</span>
+            <div class="${bgClass}" style="${bgStyle}"></div>
+            ${item.youtubeId ? `
+              <div class="news-card-yt-thumb" style="background-image:url('https://img.youtube.com/vi/${item.youtubeId}/maxresdefault.jpg');background-size:cover;background-position:center;position:absolute;inset:0;z-index:1;"></div>
+              <iframe class="news-card-yt" src="" data-ytid="${item.youtubeId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="opacity:0;transition:opacity 0.5s;"></iframe>
+            ` : ''}
+            ${!item.youtubeId ? `<div class="news-card-overlay"></div>` : ''}
+            ${item.charImg ? `<img class="news-card-char" src="${item.charImg}" alt="" aria-hidden="true">` : ''}
+            ${item.items ? item.items.map((src, idx) => `<img class="news-card-item news-card-item--${idx}" src="${src}" alt="" aria-hidden="true">`).join('') : ''}
+            ${item.logoItems ? `<div class="news-card-logos">${item.logoItems.map(src => `<img src="${src}" alt="" aria-hidden="true">`).join('<span class="news-card-logo-divider"></span>')}</div>` : ''}
+            ${item.tag ? `<span class="news-card-tag">${item.tag}</span>` : ''}
             <div class="news-card-body">
               ${item.category ? `<p class="news-card-category">${item.category}</p>` : ''}
               <h3 class="news-card-title">${item.title.replace(/\n/g,'<br>')}</h3>
               <p class="news-card-desc">${item.desc}</p>
-              <button class="news-card-btn">자세히 보기 <svg viewBox="0 0 24 8" width="28" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="0" y1="4" x2="22" y2="4"/><polyline points="18,1 22,4 18,7"/></svg></button>
+              <button class="news-card-btn">자세히 보기 <svg class="btn-arrow" viewBox="0 0 80 30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt" width="40" height="15"><line class="btn-arrow-line" x1="8" y1="20" x2="72" y2="20"/><line class="btn-arrow-head" x1="72" y1="20" x2="58" y2="6"/></svg></button>
             </div>
           </div>`;
         newsCarousel.appendChild(card);
+
+        // 캐릭터 이미지: 초기 위치 고정 후 featured일 때 fade-in
+        if (item.charImg) {
+          const charEl = card.querySelector('.news-card-char');
+          if (charEl) {
+            gsap.set(charEl, { opacity: 0, y: 0, xPercent: -50 });
+          }
+        }
 
         // 도트
         const dot = document.createElement('button');
@@ -638,10 +707,82 @@
       });
     };
 
+    const animateCharOnFeatured = () => {
+      const item = filteredData[newsIndex];
+      const cards = newsCarousel.querySelectorAll('.news-card');
+      const featuredCard = Array.from(cards).find(c => parseInt(c.dataset.index) === newsIndex);
+
+      // 나머지 카드 캐릭터/아이템 숨김
+      cards.forEach(c => {
+        if (parseInt(c.dataset.index) !== newsIndex) {
+          c.querySelectorAll('.news-card-char').forEach(el => { gsap.killTweensOf(el); gsap.set(el, { opacity: 0, y: 0, xPercent: -50 }); });
+          c.querySelectorAll('.news-card-item').forEach(el => { gsap.killTweensOf(el); gsap.set(el, { opacity: 0, y: 0 }); });
+        }
+      });
+
+      if (!featuredCard || !item) return;
+
+      // 캐릭터 fade-in + float
+      const charEl = featuredCard.querySelector('.news-card-char');
+      if (charEl) {
+        gsap.killTweensOf(charEl);
+        gsap.fromTo(charEl,
+          { opacity: 0, y: 40, xPercent: -50 },
+          {
+            opacity: 1, y: 0, xPercent: -50, duration: 0.8, ease: 'power2.out',
+            onComplete: () => {
+              gsap.to(charEl, { y: -10, xPercent: -50, duration: 2.8, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+            }
+          }
+        );
+      }
+
+      // 아이템 순차 fade-in + float
+      featuredCard.querySelectorAll('.news-card-item').forEach((el, i) => {
+        gsap.killTweensOf(el);
+        gsap.fromTo(el,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: 0.15 + i * 0.12,
+            onComplete: () => {
+              gsap.to(el, { y: -8, duration: 2.4 + i * 0.3, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+            }
+          }
+        );
+      });
+    };
+
+    const stopAllYoutube = () => {
+      newsCarousel.querySelectorAll('.news-card-yt').forEach(iframe => {
+        iframe.src = '';
+        iframe.style.opacity = '0';
+      });
+    };
+
+    const playFeaturedYoutube = () => {
+      const item = filteredData[newsIndex];
+      if (!item || !item.youtubeId) return;
+      const cards = newsCarousel.querySelectorAll('.news-card');
+      const featuredCard = Array.from(cards).find(c => parseInt(c.dataset.index) === newsIndex);
+      if (!featuredCard) return;
+      const iframe = featuredCard.querySelector('.news-card-yt');
+      if (iframe) {
+        iframe.style.opacity = '0';
+        iframe.src = `https://www.youtube.com/embed/${item.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${item.youtubeId}&controls=0&rel=0`;
+        iframe.onload = () => { iframe.style.opacity = '1'; };
+      }
+    };
+
     const goNews = (idx) => {
       newsIndex = ((idx % filteredData.length) + filteredData.length) % filteredData.length;
+      // 이전 featured 카드 캐릭터/아이템/유튜브 즉시 초기화
+      newsCarousel.querySelectorAll('.news-card-char').forEach(el => { gsap.killTweensOf(el); gsap.set(el, { opacity: 0, y: 0, xPercent: -50 }); });
+      newsCarousel.querySelectorAll('.news-card-item').forEach(el => { gsap.killTweensOf(el); gsap.set(el, { opacity: 0, y: 0 }); });
+      stopAllYoutube();
       positionCards(true);
       updateSectionBg(newsIndex);
+      playFeaturedYoutube();
+      gsap.delayedCall(0.2, animateCharOnFeatured);
     };
 
     const bindDrag = () => {
@@ -665,8 +806,11 @@
         const areaH = newsCarousel.closest('.news-carousel-area').offsetHeight;
         const centerX = areaW / 2 - FEATURED_W / 2;
 
+        const total = cards.length;
         cards.forEach((card, i) => {
-          const offset = i - newsIndex;
+          let offset = i - newsIndex;
+          if (offset > total / 2)  offset -= total;
+          if (offset < -total / 2) offset += total;
           const isFeat = offset === 0;
           const absOff = Math.abs(offset);
           const cardH = isFeat ? Math.round(FEATURED_W * 0.75) : Math.round(CARD_W * 0.75);
@@ -717,12 +861,16 @@
         btn.classList.add('active');
         const f = btn.dataset.filter;
         filteredData = f === 'all' ? [...allNewsData] : allNewsData.filter(n => n.type === f);
-        newsIndex = Math.min(newsIndex, Math.max(0, filteredData.length - 1));
+        newsIndex = 0;
         buildNewsCards();
+        animateCharOnFeatured();
+        playFeaturedYoutube();
       });
     });
 
     buildNewsCards();
+    animateCharOnFeatured();
+    playFeaturedYoutube();
   }
 
   // Hero inline video
