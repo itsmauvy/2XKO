@@ -427,24 +427,21 @@
         } else if (key === 'ahri') {
           gsap.fromTo(imgEl,
             { x: 200, rotation: 12, scale: 0.85 },
-            { x: 0, rotation: 0, scale: 1, duration: 0.55, ease: 'back.out(1.4)',
-              onComplete: () => gsap.fromTo(imgEl, { x: 6 }, { x: 0, duration: 0.3, ease: 'elastic.out(3, 0.4)' })
-            }
+            { x: 0, rotation: 0, scale: 1, duration: 0.55, ease: 'back.out(1.4)' }
           );
         } else if (key === 'boltz') {
-          gsap.fromTo(imgEl,
-            { scale: 0.4, x: 80, y: -30 },
-            { scale: 1, x: 0, y: 0, duration: 0.45, ease: 'expo.out',
-              onComplete: () => gsap.fromTo(champSection, { x: -10 }, { x: 0, duration: 0.3, ease: 'elastic.out(5, 0.3)' })
-            }
-          );
+          // 멀리서 돌진 그랩 — 작게 시작해 카메라 앞으로 빠르게 달려오다 오버슛 후 딱 잡힘
+          gsap.timeline()
+            .fromTo(imgEl,
+              { scale: 0.22, x: 40, y: 20, opacity: 1 },
+              { scale: 1.1, x: 0, y: 0, duration: 0.32, ease: 'power4.out' }
+            )
+            .to(imgEl, { scale: 1, duration: 0.2, ease: 'back.out(2.5)' });
         } else {
-          // 케이틀린 기본 슬램인
+          // 케이틀린 — 스코프 포커스: 블러+확대 → 선명하게 스냅
           gsap.fromTo(imgEl,
-            { x: 120, scale: 1.06 },
-            { x: 0, scale: 1, duration: 0.35, ease: 'expo.out',
-              onComplete: () => gsap.fromTo(champSection, { x: -6 }, { x: 0, duration: 0.25, ease: 'elastic.out(4, 0.3)' })
-            }
+            { x: 30, scale: 1.12, filter: 'blur(8px)', opacity: 1 },
+            { x: 0, scale: 1, filter: 'blur(0px)', duration: 0.5, ease: 'power4.out' }
           );
         }
 
