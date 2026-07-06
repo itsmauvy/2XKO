@@ -6,20 +6,25 @@
     tl.from('.bg-img', { opacity: 0, duration: 0.8, stagger: 0.08 });
     // 2. 네브바
     tl.from('.navbar', { y: -40, opacity: 0, duration: 0.5, ease: 'power2.out' }, '-=0.5');
-    // 3. 왼팀 먼저 (Ekko + Vi 동시)
-    tl.from('.ekko-img', { x: -100, opacity: 0, duration: 1.0, ease: 'power2.out' }, '-=0.3');
-    tl.from('.vi-img',   { x:  -60, opacity: 0, duration: 1.0, ease: 'power2.out' }, '<');
-    // 4. 오른팀 (Jinx + Ahri 동시)
-    tl.from('.jinx-img', { x:  100, opacity: 0, duration: 1.0, ease: 'power2.out' }, '-=0.5');
-    tl.from('.ahri-img', { x:   60, opacity: 0, duration: 1.0, ease: 'power2.out' }, '<');
-    // 5. 이름 라벨
-    tl.from('.char-label', { opacity: 0, y: 10, duration: 0.4, stagger: 0.08, ease: 'power2.out' }, '-=0.2');
-    // 6. 타이틀 → 태그라인 → 나머지
-    tl.to('.hero-title',   { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(1.2)' }, '-=0.1');
-    tl.to('.hero-tagline', { opacity: 1, y: 0, duration: 0.45 }, '-=0.2');
-    tl.to('.hero-sub',     { opacity: 1, duration: 0.35 }, '-=0.15');
-    tl.to('.cta-wrap',     { opacity: 1, y: 0, duration: 0.4 }, '-=0.15');
-    tl.to('.platforms',    { opacity: 1, duration: 0.35 }, '-=0.1');
+    // 3. [1단계] 왼팀 — Ekko + Vi 캐릭터와 이름 동시 등장
+    tl.addLabel('leftTeam', '-=0.3');
+    tl.from('.ekko-img', { x: -100, opacity: 0, duration: 1.0, ease: 'power2.out' }, 'leftTeam');
+    tl.from('.vi-img',   { x:  -60, opacity: 0, duration: 1.0, ease: 'power2.out' }, 'leftTeam');
+    tl.from('.ekko-label, .vi-label', { opacity: 0, y: 10, duration: 0.4, ease: 'power2.out' }, 'leftTeam+=0.2');
+
+    // 4. [2단계] 오른팀 — Jinx + Ahri 캐릭터와 이름 동시 등장
+    tl.addLabel('rightTeam', 'leftTeam+=0.7');
+    tl.from('.jinx-img', { x: 100, opacity: 0, duration: 1.0, ease: 'power2.out' }, 'rightTeam');
+    tl.from('.ahri-img', { x:  60, opacity: 0, duration: 1.0, ease: 'power2.out' }, 'rightTeam');
+    tl.from('.jinx-label, .ahri-label', { opacity: 0, y: 10, duration: 0.4, ease: 'power2.out' }, 'rightTeam+=0.2');
+
+    // 5. [3단계] 가운데 문구 — 오른팀 등장 중간쯤에 전부 한번에
+    tl.addLabel('center', 'rightTeam+=0.5');
+    tl.to('.hero-title',   { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(1.2)' }, 'center');
+    tl.to('.hero-tagline', { opacity: 1, y: 0, duration: 0.45 }, 'center');
+    tl.to('.hero-sub',     { opacity: 1, duration: 0.35 }, 'center');
+    tl.to('.cta-wrap',     { opacity: 1, y: 0, duration: 0.4 }, 'center');
+    tl.to('.platforms',    { opacity: 1, duration: 0.35 }, 'center');
 
     // 제목 둥둥
     gsap.to('.hero-title',   { y: -8, duration: 2.5, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 2 });
