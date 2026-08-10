@@ -25,8 +25,31 @@
         <span class="lang-divider"></span>
         <button class="lang-btn" type="button">EN</button>
       </div>
+      <button class="ham-btn" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu">
+        <span class="ham-line"></span>
+        <span class="ham-line"></span>
+        <span class="ham-line"></span>
+      </button>
     </div>
   </nav>
+
+  <!-- 모바일 메뉴 드로어 -->
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <div class="mobile-menu-backdrop"></div>
+    <nav class="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="모바일 메뉴">
+      <ul class="mobile-nav-links">
+        <li><a href="#game-intro" class="mobile-nav-link">게임소개</a></li>
+        <li><a href="#champions" class="mobile-nav-link">챔피언</a></li>
+        <li><a href="#news" class="mobile-nav-link">새소식</a></li>
+      </ul>
+      <a href="#" class="btn-primary mobile-nav-cta">지금 플레이 하기</a>
+      <div class="mobile-nav-lang">
+        <button class="lang-btn active" type="button">KR</button>
+        <span class="lang-divider"></span>
+        <button class="lang-btn" type="button">EN</button>
+      </div>
+    </nav>
+  </div>
 
   <div class="snap-wrap">
   <section class="hero">

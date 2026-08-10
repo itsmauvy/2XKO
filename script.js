@@ -927,4 +927,36 @@
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && videoModal.classList.contains('is-open')) closeVideo();
   });
+
+  /* ── 모바일 햄버거 메뉴 ── */
+  const hamBtn = document.querySelector('.ham-btn');
+  const mobileMenu = document.querySelector('.mobile-menu');
+  const mobileBackdrop = document.querySelector('.mobile-menu-backdrop');
+  const mobileNavLinks = document.querySelectorAll('.mobile-nav-link, .mobile-nav-cta');
+
+  const openMenu = () => {
+    hamBtn.classList.add('is-open');
+    hamBtn.setAttribute('aria-expanded', 'true');
+    mobileMenu.classList.add('is-open');
+    mobileMenu.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeMenu = () => {
+    hamBtn.classList.remove('is-open');
+    hamBtn.setAttribute('aria-expanded', 'false');
+    mobileMenu.classList.remove('is-open');
+    mobileMenu.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  };
+
+  hamBtn.addEventListener('click', () => {
+    mobileMenu.classList.contains('is-open') ? closeMenu() : openMenu();
+  });
+
+  mobileBackdrop.addEventListener('click', closeMenu);
+  mobileNavLinks.forEach(link => link.addEventListener('click', closeMenu));
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu.classList.contains('is-open')) closeMenu();
+  });
 });
