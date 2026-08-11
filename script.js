@@ -1,5 +1,7 @@
 ﻿window.addEventListener('load', () => {
-  if (window.gsap) {
+  const isMobile = window.innerWidth <= 768;
+
+  if (window.gsap && !isMobile) {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
     // 1. 배경 먼저 페이드인
@@ -105,11 +107,17 @@
       color: '#092F75',
       engName: 'CAITLYN',
       name: '케이틀린',
+      name_en: 'Caitlyn',
       subtitle: '필트오버의 보안관',
+      subtitle_en: 'Sheriff of Piltover',
       desc: '날카로운 눈썰미로 범죄자를 추적하고,<br>덫과 정밀한 사격으로 상대를 제압합니다.',
+      desc_en: 'She tracks criminals with a keen eye,<br>subduing foes with traps and precise marksmanship.',
       quote: '어디, 이번 사건도 파헤쳐볼까?',
+      quote_en: '"Let\'s see what this case is hiding."',
       role: '공간 장악',
+      role_en: 'Zone Control',
       style: '원거리 견제 / 거리 유지',
+      style_en: 'Ranged Poke / Keep Distance',
       img: 'images/caitlyn character.png',
       imgHeight: '175vh',
       voiceFile: 'video/caitlyn voice.MP3',
@@ -120,11 +128,17 @@
       color: '#4caf2a',
       engName: 'TEEMO',
       name: '티모',
+      name_en: 'Teemo',
       subtitle: '날쌘 정찰병',
+      subtitle_en: 'The Swift Scout',
       desc: '다양한 속임수로 상대의 허를 찌르며,<br>원거리에서 빈틈을 노려 싸웁니다.',
+      desc_en: 'Catches enemies off guard with clever tricks,<br>striking from range when they least expect it.',
       quote: '정찰 다녀오겠습니다.',
+      quote_en: '"Captain Teemo on duty!"',
       role: '덫사냥꾼',
+      role_en: 'Trapper',
       style: '속임수 / 기습',
+      style_en: 'Trickery / Ambush',
       img: 'images/teemo img.png',
       imgHeight: '105vh',
       imgTop: '-18vh',
@@ -136,11 +150,17 @@
       color: '#e8174f',
       engName: 'AHRI',
       name: '아리',
+      name_en: 'Ahri',
       subtitle: '매혹적인 구미호',
+      subtitle_en: 'The Nine-Tailed Fox',
       desc: '높은 기동성을 갖춘 마법사 챔피언으로,<br>다양한 기술을 활용해 상대를 압박합니다.',
+      desc_en: 'A highly mobile mage who relentlessly pressures<br>opponents with a versatile kit and swift movement.',
       quote: '내 본성을 보여주지.',
+      quote_en: '"I\'ll show you my true self."',
       role: '공격 일변도',
+      role_en: 'All-In Aggressor',
       style: '빠른 접근 / 연속 공격',
+      style_en: 'Dash In / Chain Attacks',
       img: 'images/ahri character.png',
       imgHeight: '175vh',
       imgTop: '5vh',
@@ -152,11 +172,17 @@
       color: '#f5a623',
       engName: 'BLITZCRANK',
       name: '블리츠크랭크',
+      name_en: 'Blitzcrank',
       subtitle: '거대 증기 골렘',
+      subtitle_en: 'The Great Steam Golem',
       desc: '로켓 손으로 상대를 가까이 끌어당겨 강력한 잡기 기술과<br>에너지 폭발로 공격을 이어 가는 챔피언입니다.',
+      desc_en: 'Yanks enemies in with a rocket fist, then unleashes<br>devastating grabs and energy bursts up close.',
       quote: '인간 시대의 끝이 도래했다.',
+      quote_en: '"The era of man is over."',
       role: '잡기 특화',
+      role_en: 'Grappler',
       style: '상대 끌어오기 / 근접 제압',
+      style_en: 'Pull In / Close-Range Lockdown',
       img: 'images/blitzcrank character.png',
       imgHeight: '87vh',
       voiceFile: 'video/blitzcrank voice(1).MP3',
@@ -381,6 +407,7 @@
     };
     snapWrap.addEventListener('scroll', onSnapScroll, { passive: true });
 
+    window._switchChamp = (key) => switchChamp(key);
     const switchChamp = (key) => {
       const d = champData[key];
       if (!d) return;
@@ -390,13 +417,14 @@
       gsap.set(champOrb, { opacity: 0, scale: 0.6 });
       champMushs.forEach(m => gsap.set(m, { opacity: 0, scale: 0.4 }));
 
+      const isEn = window.siteLang === 'en';
       bgNames.forEach(el => el.textContent = d.engName || d.name);
-      nameEl.textContent = d.name;
-      subtitleEl.textContent = d.subtitle;
-      descEl.innerHTML = d.desc;
-      quoteEl.textContent = d.quote;
-      roleEl.innerHTML = `<strong>유형</strong> ${d.role}`;
-      styleEl.innerHTML = `<strong>전투 방식</strong> ${d.style}`;
+      nameEl.textContent = isEn ? (d.name_en || d.name) : d.name;
+      subtitleEl.textContent = isEn ? (d.subtitle_en || d.subtitle) : d.subtitle;
+      descEl.innerHTML = isEn ? (d.desc_en || d.desc) : d.desc;
+      quoteEl.textContent = isEn ? (d.quote_en || d.quote) : d.quote;
+      roleEl.innerHTML = `<strong>${isEn ? 'Type' : '유형'}</strong> ${isEn ? (d.role_en || d.role) : d.role}`;
+      styleEl.innerHTML = `<strong>${isEn ? 'Style' : '전투 방식'}</strong> ${isEn ? (d.style_en || d.style) : d.style}`;
       if (artBg) artBg.style.background = `linear-gradient(-14deg, #fff 0%, #fff 28%, ${d.color} 28%, ${d.color} 72%, #fff 72%, #fff 100%)`;
 
       // 스킬 프리뷰 카드 스택 교체
@@ -490,76 +518,94 @@
 
   const newsData = [
     {
-      tag: 'ANNOUNCEMENTS', category: '공지',
+      tag: 'ANNOUNCEMENTS', category: '공지', category_en: 'Notice',
       title: '라이엇 게임즈 개인정보 처리방침\n변경 사항 안내',
+      title_en: 'Riot Games Privacy Policy\nUpdate Notice',
       desc: '개인정보 처리방침의 일부 내용이 변경됩니다.',
+      desc_en: 'Certain sections of the Privacy Policy have been updated.',
       bgImg: 'images/jinx update bg.jpg',
       charImg: 'images/jinx update character.png',
       type: 'notice',
     },
     {
-      tag: 'ANNOUNCEMENTS', category: '공지',
+      tag: 'ANNOUNCEMENTS', category: '공지', category_en: 'Notice',
       title: 'PC방 전용 아바타\n아이템 안내',
+      title_en: 'PC Bang Exclusive\nAvatar Items',
       desc: 'PC방에서만 사용 가능한 아바타 아이템을 소개합니다.',
+      desc_en: 'Introducing avatar items exclusively available at PC Bang locations.',
       bgImg: 'images/pc avatar bg.jpg',
       items: ['images/avatar item headphone.png', 'images/avatar item riot.png', 'images/avatar item backpack.png'],
       bg: 'linear-gradient(160deg, #0a1e2e 0%, #040e1c 100%)',
       type: 'notice',
     },
     {
-      tag: '', category: '공지',
+      tag: '', category: '공지', category_en: 'Notice',
       title: '세나 기술 목록',
+      title_en: 'Senna Ability Breakdown',
       desc: '세나의 모든 기술을 정리했습니다. 6월 10일에 2XKO에서 플레이하세요.',
+      desc_en: 'A full rundown of Senna\'s abilities. Play her in 2XKO starting June 10.',
       youtubeId: '8xbRJvATrsI',
       bg: 'linear-gradient(160deg, #1a0808 0%, #0d0404 100%)',
       type: 'notice',
     },
     {
-      tag: 'UPDATE', category: '업데이트',
+      tag: 'UPDATE', category: '업데이트', category_en: 'Update',
       title: '정상 등반: 2XKO의\n새로운 PvE 모드',
+      title_en: 'Conquer the Summit:\n2XKO\'s New PvE Mode',
       desc: '좋아하는 챔피언으로 매번 색다른 빌드를 실험해 보세요. PvP에선 경험할 수 없었던 재미를 지금 소개합니다.',
+      desc_en: 'Experiment with fresh builds each run using your favorite champions. A whole new kind of fun you won\'t find in PvP.',
       bgImg: 'images/pve mode bg.jpg',
       charImg: 'images/sena thresh.png',
       bg: 'linear-gradient(160deg, #0a1e0a 0%, #040e04 100%)',
       type: 'update',
     },
     {
-      tag: 'UPDATE', category: '업데이트',
+      tag: 'UPDATE', category: '업데이트', category_en: 'Update',
       title: '수영장 파티 메가 세트 출시',
+      title_en: 'Pool Party Mega Bundle Out Now',
       desc: '분위기를 달굴 때로군요. 수영장 파티 및 야밤의 수영장 파티 메가 세트를 만나 보세요.',
+      desc_en: 'Time to heat things up. Dive into the Pool Party and Nighttime Pool Party Mega Bundles.',
       youtubeId: 'enfAc20FFf4',
       bg: 'linear-gradient(160deg, #0a1a2e 0%, #040a1c 100%)',
       type: 'update',
     },
     {
-      tag: 'UPDATE', category: '업데이트',
+      tag: 'UPDATE', category: '업데이트', category_en: 'Update',
       title: '2XKO 긴급 패치: 1.1.5\n(2026년 4월 29일)',
+      title_en: '2XKO Hotfix: 1.1.5\n(April 29, 2026)',
       desc: '이번 긴급 패치에서는 분노의 위력과 해방 미터 생성량, 관전 기능의 버그가 수정됩니다.',
+      desc_en: 'This hotfix addresses Rage strength, Liberation meter generation, and a bug with the spectator feature.',
       bgImg: 'images/bug fix bg.jpg',
       bg: 'linear-gradient(160deg, #1a0e0a 0%, #0d0604 100%)',
       type: 'update',
     },
     {
-      tag: 'COMMUNITY', category: '커뮤니티',
+      tag: 'COMMUNITY', category: '커뮤니티', category_en: 'Community',
       title: '2026 EVO 2XKO\n부문 안내',
+      title_en: '2026 EVO\n2XKO Bracket Guide',
       desc: '6월 26일, 2026 EVO의 막이 오릅니다. 2XKO 부문에 대해 알아야 할 모든 것을 지금 확인하세요.',
+      desc_en: 'EVO 2026 kicks off June 26. Everything you need to know about the 2XKO bracket, right here.',
       bgImg: 'images/2xko x evo bg.jpg',
       logoItems: ['images/2xko major.png', 'images/evo.png'],
       bg: 'linear-gradient(160deg, #1a0a2e 0%, #0d0520 100%)',
       type: 'community',
     },
     {
-      tag: 'COMMUNITY', category: '커뮤니티',
+      tag: 'COMMUNITY', category: '커뮤니티', category_en: 'Community',
       title: '2026 EVO Japan:\n2XKO 부문 참가 신청 안내',
+      title_en: '2026 EVO Japan:\n2XKO Registration Info',
       desc: '2XKO의 다음 메이저 대회가 EVO Japan에서 열립니다. 참가상인 핏빛달 아칼리 스킨도 기대해 주세요.',
+      desc_en: 'The next 2XKO Major is coming to EVO Japan. Stay tuned for the Blood Moon Akali participation skin.',
       bgImg: 'images/2xko x evo jp.jpg',
       bg: 'linear-gradient(160deg, #0a1a2e 0%, #04101c 100%)',
       type: 'community',
     },
     {
-      tag: 'COMMUNITY', category: '커뮤니티',
+      tag: 'COMMUNITY', category: '커뮤니티', category_en: 'Community',
       title: '2XKO 커뮤니티 대회 지원\n- 프로그램 개시',
+      title_en: '2XKO Community\nTournament Support Program Launch',
       desc: '2XKO의 지역 대회에 참가하고 게임 내 보상을 획득하세요. 전 세계 플레이어를 대상으로 시행됩니다.',
+      desc_en: 'Participate in local 2XKO tournaments and earn in-game rewards. Open to players worldwide.',
       bgImg: 'images/community.jpg',
       bg: 'linear-gradient(160deg, #0a1a1a 0%, #040e0e 100%)',
       type: 'community',
@@ -605,6 +651,7 @@
       }
     };
 
+    window._buildNewsCards = () => buildNewsCards();
     const buildNewsCards = () => {
       newsCarousel.innerHTML = '';
       newsDots.innerHTML = '';
@@ -631,10 +678,10 @@
             ${item.logoItems ? `<div class="news-card-logos">${item.logoItems.map(src => `<img src="${src}" alt="" aria-hidden="true">`).join('<span class="news-card-logo-divider"></span>')}</div>` : ''}
             ${item.tag ? `<span class="news-card-tag">${item.tag}</span>` : ''}
             <div class="news-card-body">
-              ${item.category ? `<p class="news-card-category">${item.category}</p>` : ''}
-              <h3 class="news-card-title">${item.title.replace(/\n/g,'<br>')}</h3>
-              <p class="news-card-desc">${item.desc}</p>
-              <button class="news-card-btn">자세히 보기 <svg class="btn-arrow" viewBox="0 0 80 30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt" width="40" height="15"><line class="btn-arrow-line" x1="8" y1="20" x2="72" y2="20"/><line class="btn-arrow-head" x1="72" y1="20" x2="58" y2="6"/></svg></button>
+              ${item.category ? `<p class="news-card-category">${window.siteLang === 'en' ? (item.category_en || item.category) : item.category}</p>` : ''}
+              <h3 class="news-card-title">${(window.siteLang === 'en' ? (item.title_en || item.title) : item.title).replace(/\n/g,'<br>')}</h3>
+              <p class="news-card-desc">${window.siteLang === 'en' ? (item.desc_en || item.desc) : item.desc}</p>
+              <button class="news-card-btn">${window.siteLang === 'en' ? 'Learn More' : '자세히 보기'} <svg class="btn-arrow" viewBox="0 0 80 30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt" width="40" height="15"><line class="btn-arrow-line" x1="8" y1="20" x2="72" y2="20"/><line class="btn-arrow-head" x1="72" y1="20" x2="58" y2="6"/></svg></button>
             </div>
           </div>`;
         newsCarousel.appendChild(card);
@@ -958,5 +1005,40 @@
   mobileNavLinks.forEach(link => link.addEventListener('click', closeMenu));
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && mobileMenu.classList.contains('is-open')) closeMenu();
+  });
+
+  // ===================== LANGUAGE SWITCH =====================
+  window.siteLang = 'kr';
+
+  const applyLang = (lang) => {
+    window.siteLang = lang;
+    document.documentElement.lang = lang === 'en' ? 'en' : 'ko';
+
+    document.querySelectorAll('[data-kr]').forEach(el => {
+      el.textContent = lang === 'en' ? (el.dataset.en || el.dataset.kr) : el.dataset.kr;
+    });
+    document.querySelectorAll('[data-kr-html]').forEach(el => {
+      el.innerHTML = lang === 'en' ? (el.dataset.enHtml || el.dataset.krHtml) : el.dataset.krHtml;
+    });
+
+    const activeTab = document.querySelector('.champ-tab.active');
+    if (activeTab && window._switchChamp) {
+      window._switchChamp(activeTab.dataset.champ);
+    }
+
+    if (window._buildNewsCards) {
+      window._buildNewsCards();
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.trim() === lang.toUpperCase());
+    });
+  };
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.textContent.trim().toLowerCase();
+      applyLang(lang);
+    });
   });
 });
